@@ -11,7 +11,7 @@ Every day brings a fresh prompt with two blanks and six word blocks. Each block 
 
 |                |                                                                                   |
 | -------------- | --------------------------------------------------------------------------------- |
-| App listing    | `https://developers.reddit.com/apps/karmass` _(TODO after first `devvit upload`)_ |
+| App listing    | `https://developers.reddit.com/apps/karmass-game` _(TODO after first `devvit upload`)_ |
 | Test subreddit | `r/TODO` _(public, fewer than 200 members)_                                       |
 | Live demo post | _(TODO)_                                                                          |
 | Demo video     | _(TODO: under 60 seconds, public on YouTube)_                                     |

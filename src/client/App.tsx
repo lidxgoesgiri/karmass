@@ -181,61 +181,71 @@ export const App = () => {
   const toggleMute = () => {
     sound.unlock();
     sound.setMuted(!muted);
+    if (muted) sound.play('lock'); // audible confirmation when turning sound back on
     setMuted(!muted);
   };
 
+  // Finished sessions show the last tested pair in the prompt instead of empty slots.
+  const shownPair =
+    phase === 'final' ? (game?.session.attempts.at(-1) ?? null) : null;
+
   return (
-    <div className="relative flex h-full flex-col overflow-hidden">
-      <PromptHeader
-        game={game}
-        phase={phase}
-        slotA={phase === 'vote' ? null : label(slots.left)}
-        slotB={phase === 'vote' ? null : label(slots.right)}
-        muted={muted}
-        onToggleMute={toggleMute}
-      />
-      <div className="relative min-h-0 flex-1">
-        <div ref={stageRef} className="absolute inset-0 touch-none" />
-        {phase === 'loading' && (
-          <p className="pointer-events-none absolute inset-x-0 top-1/3 text-center font-mono text-[12px] tracking-[0.2em] text-muted">
-            WEIGHING THE HIVEMIND…
-          </p>
-        )}
-        {phase === 'error' && error && (
-          <p className="absolute inset-x-6 top-1/3 text-center text-[14px] text-muted">
-            {error}
-          </p>
-        )}
-      </div>
-      <ActionBar
-        phase={phase}
-        canVote={Boolean(votePick)}
-        canDrop={Boolean(slots.left && slots.right)}
-        last={last}
-        attemptsUsed={game?.session.attempts.length ?? 0}
-        onVote={lockVote}
-        onDrop={drop}
-        onRetry={retry}
-        onResults={() => setCardOpen(true)}
-        onReload={() => void load(game?.edition.number ?? postEdition())}
-      />
-      <AnimatePresence>
-        {cardOpen && game && (
-          <EndStateCard
-            game={game}
-            onClose={() => setCardOpen(false)}
-            onPlayEdition={(n) => void load(n)}
-            onShared={() =>
-              setGame((g) =>
-                g ? { ...g, session: { ...g.session, shared: true } } : g
-              )
-            }
-            onPlayer={(player) => setGame((g) => (g ? { ...g, player } : g))}
-          />
-        )}
-      </AnimatePresence>
-      <div aria-live="polite" className="sr-only">
-        {announce}
+    // Large desktop/fullscreen views get a compact centered column instead of a stretched arena.
+    <div className="dot-grid flex h-full items-center justify-center overflow-hidden">
+      <div className="relative flex h-full max-h-[760px] w-full max-w-[760px] flex-col overflow-hidden">
+        <PromptHeader
+          game={game}
+          phase={phase}
+          slotA={phase === 'vote' ? null : label(shownPair?.left ?? slots.left)}
+          slotB={
+            phase === 'vote' ? null : label(shownPair?.right ?? slots.right)
+          }
+          muted={muted}
+          onToggleMute={toggleMute}
+        />
+        <div className="relative min-h-0 flex-1">
+          <div ref={stageRef} className="absolute inset-0 touch-none" />
+          {phase === 'loading' && (
+            <p className="pointer-events-none absolute inset-x-0 top-1/3 text-center font-mono text-[12px] tracking-[0.2em] text-muted">
+              WEIGHING THE HIVEMIND…
+            </p>
+          )}
+          {phase === 'error' && error && (
+            <p className="absolute inset-x-6 top-1/3 text-center text-[14px] text-muted">
+              {error}
+            </p>
+          )}
+        </div>
+        <ActionBar
+          phase={phase}
+          canVote={Boolean(votePick)}
+          canDrop={Boolean(slots.left && slots.right)}
+          last={last}
+          attemptsUsed={game?.session.attempts.length ?? 0}
+          onVote={lockVote}
+          onDrop={drop}
+          onRetry={retry}
+          onResults={() => setCardOpen(true)}
+          onReload={() => void load(game?.edition.number ?? postEdition())}
+        />
+        <AnimatePresence>
+          {cardOpen && game && (
+            <EndStateCard
+              game={game}
+              onClose={() => setCardOpen(false)}
+              onPlayEdition={(n) => void load(n)}
+              onShared={() =>
+                setGame((g) =>
+                  g ? { ...g, session: { ...g.session, shared: true } } : g
+                )
+              }
+              onPlayer={(player) => setGame((g) => (g ? { ...g, player } : g))}
+            />
+          )}
+        </AnimatePresence>
+        <div aria-live="polite" className="sr-only">
+          {announce}
+        </div>
       </div>
     </div>
   );

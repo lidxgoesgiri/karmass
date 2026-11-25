@@ -67,7 +67,9 @@ export const PromptHeader = ({
           </span>
         )}
         {game && (
-          <span className="hidden min-[340px]:inline">{game.voters} VOTES</span>
+          <span className="hidden min-[340px]:inline">
+            {game.voters} {game.voters === 1 ? 'VOTE' : 'VOTES'}
+          </span>
         )}
         <span
           className="ml-auto flex items-center gap-1"

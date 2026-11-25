@@ -16,16 +16,27 @@ type Particle = {
 const LOW_FPS = 45;
 const LOW_FPS_WINDOW_MS = 1000;
 
+// Filters default to resolution 1 and no MSAA, which blurs everything on 125%/150%/200%
+// displays. Inherit the renderer's resolution and antialiasing instead.
+const crisp = <T extends Filter>(f: T): T => {
+  f.resolution = 'inherit';
+  f.antialias = 'inherit';
+  return f;
+};
+
 // Post-processing, particles and screen shake, with a one-way quality fallback on slow devices.
+// Bloom only touches the glow layers (gauge, star, plank, particles) so word blocks stay sharp.
 export class FxController {
   lowQuality = false;
-  private bloom: AdvancedBloomFilter | null = new AdvancedBloomFilter({
-    threshold: 0.45,
-    bloomScale: 0.85,
-    brightness: 1,
-    blur: 6,
-    quality: 4,
-  });
+  private bloom: AdvancedBloomFilter | null = crisp(
+    new AdvancedBloomFilter({
+      threshold: 0.55,
+      bloomScale: 0.9,
+      brightness: 1,
+      blur: 8,
+      quality: 5,
+    })
+  );
   private shock: { f: ShockwaveFilter; t: number } | null = null;
   private rgb: { f: RGBSplitFilter; t: number } | null = null;
   private shakeLeft = 0;
@@ -36,7 +47,8 @@ export class FxController {
   constructor(
     private app: Application,
     private world: Container,
-    private layer: Container
+    private layer: Container,
+    private glow: Container[]
   ) {
     this.world.filterArea = this.app.screen;
     this.sync();
@@ -76,14 +88,16 @@ export class FxController {
 
   shockwave(x: number, y: number): void {
     this.shock = {
-      f: new ShockwaveFilter({
-        center: { x, y },
-        amplitude: 14,
-        wavelength: 80,
-        speed: 420,
-        radius: 170,
-        brightness: 1.15,
-      }),
+      f: crisp(
+        new ShockwaveFilter({
+          center: { x, y },
+          amplitude: 14,
+          wavelength: 80,
+          speed: 420,
+          radius: 170,
+          brightness: 1.15,
+        })
+      ),
       t: 0,
     };
     this.sync();
@@ -91,11 +105,13 @@ export class FxController {
 
   rgbSplit(): void {
     this.rgb = {
-      f: new RGBSplitFilter({
-        red: { x: -6, y: 0 },
-        green: { x: 0, y: 3 },
-        blue: { x: 6, y: -2 },
-      }),
+      f: crisp(
+        new RGBSplitFilter({
+          red: { x: -6, y: 0 },
+          green: { x: 0, y: 3 },
+          blue: { x: 6, y: -2 },
+        })
+      ),
       t: 0,
     };
     this.sync();
@@ -147,10 +163,10 @@ export class FxController {
   }
 
   private sync(): void {
-    const list: Filter[] = [];
-    if (this.bloom) list.push(this.bloom);
-    if (this.shock) list.push(this.shock.f);
-    if (this.rgb) list.push(this.rgb.f);
-    this.world.filters = list;
+    const transient: Filter[] = [];
+    if (this.shock) transient.push(this.shock.f);
+    if (this.rgb) transient.push(this.rgb.f);
+    this.world.filters = transient;
+    this.glow.forEach((c) => (c.filters = this.bloom ? [this.bloom] : []));
   }
 }

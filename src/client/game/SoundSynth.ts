@@ -4,6 +4,7 @@
 type Voice = 'tick' | 'lock' | 'thump' | 'blip' | 'chime' | 'boing' | 'vote';
 
 const MUTE_KEY = 'karmass:muted';
+const MASTER_GAIN = 0.9;
 
 class SoundSynth {
   private ctx: AudioContext | null = null;
@@ -13,20 +14,41 @@ class SoundSynth {
   constructor() {
     document.addEventListener('visibilitychange', () => {
       if (!this.ctx) return;
-      void (document.hidden ? this.ctx.suspend() : this.ctx.resume());
+      if (document.hidden) void this.ctx.suspend().catch(() => {});
+      else this.resume();
     });
+    // Any real gesture inside the post unlocks audio. Browsers only grant activation on
+    // click/pointerup/touchend/keydown (touch pointerdown does not count), so listen to all.
+    for (const type of [
+      'pointerdown',
+      'pointerup',
+      'click',
+      'touchend',
+      'keydown',
+    ])
+      window.addEventListener(type, () => this.unlock(), {
+        capture: true,
+        passive: true,
+      });
   }
 
   unlock(): void {
-    if (this.ctx) {
-      if (this.ctx.state === 'suspended' && !document.hidden)
-        void this.ctx.resume();
-      return;
+    if (!this.ctx) {
+      try {
+        this.ctx = new AudioContext();
+      } catch {
+        return; // Web Audio unavailable: the game stays silent but playable
+      }
+      this.master = this.ctx.createGain();
+      this.master.gain.value = this.muted ? 0 : MASTER_GAIN;
+      this.master.connect(this.ctx.destination);
     }
-    this.ctx = new AudioContext();
-    this.master = this.ctx.createGain();
-    this.master.gain.value = this.muted ? 0 : 0.6;
-    this.master.connect(this.ctx.destination);
+    this.resume();
+  }
+
+  private resume(): void {
+    if (this.ctx && this.ctx.state !== 'running')
+      void this.ctx.resume().catch(() => {});
   }
 
   setMuted(muted: boolean): void {
@@ -36,17 +58,19 @@ class SoundSynth {
     } catch {
       // storage can be unavailable inside some WebViews; mute still works for this session
     }
-    if (this.master) this.master.gain.value = muted ? 0 : 0.6;
+    if (this.master) this.master.gain.value = muted ? 0 : MASTER_GAIN;
   }
 
   play(voice: Voice, intensity = 1): void {
     const ctx = this.ctx;
     const out = this.master;
-    if (!ctx || !out || this.muted || ctx.state !== 'running') return;
+    if (!ctx || !out || this.muted) return;
+    // A context that is still starting (or was interrupted) queues sounds until it runs.
+    if (ctx.state !== 'running') this.resume();
     const t = ctx.currentTime;
     switch (voice) {
       case 'tick':
-        return tone(ctx, out, t, 'square', 1800, 1800, 0.025, 0.035);
+        return tone(ctx, out, t, 'square', 1600, 1600, 0.03, 0.06);
       case 'blip':
         return tone(
           ctx,
@@ -56,7 +80,7 @@ class SoundSynth {
           1100 + Math.random() * 500,
           900,
           0.03,
-          0.03
+          0.05
         );
       case 'lock':
         tone(ctx, out, t, 'sine', 520, 520, 0.05, 0.12);
@@ -65,8 +89,19 @@ class SoundSynth {
         tone(ctx, out, t, 'sine', 660, 660, 0.09, 0.14);
         return tone(ctx, out, t + 0.08, 'sine', 990, 990, 0.16, 0.12);
       case 'thump':
+        // Sub-bass body plus a mid 'knock' so the impact is audible on laptop/phone speakers.
         tone(ctx, out, t, 'sine', 110 * (0.8 + 0.4 * intensity), 42, 0.22, 0.5);
-        return noise(ctx, out, t, 0.08, 0.12 * intensity);
+        tone(
+          ctx,
+          out,
+          t,
+          'triangle',
+          260 * (0.8 + 0.3 * intensity),
+          90,
+          0.12,
+          0.3
+        );
+        return noise(ctx, out, t, 0.09, 0.25 * intensity);
       case 'chime':
         [523.25, 659.25, 783.99, 1046.5].forEach((f, i) =>
           tone(ctx, out, t + i * 0.08, 'sine', f, f, 0.7, 0.13)
@@ -131,7 +166,7 @@ function noise(
   const g = ctx.createGain();
   src.buffer = buf;
   filter.type = 'lowpass';
-  filter.frequency.value = 700;
+  filter.frequency.value = 1400;
   g.gain.value = gain;
   src.connect(filter).connect(g).connect(out);
   src.start(t);

@@ -77,6 +77,7 @@ const easeOut = (k: number) => 1 - (1 - k) ** 3;
 export class KarmassEngine {
   private app = new Application();
   private world = new Container();
+  private glowBack = new Container(); // bloom group: gauge, star, plank + core
   private bg = new Graphics();
   private dockPanel = new Graphics();
   private gauge = new Graphics();
@@ -147,20 +148,22 @@ export class KarmassEngine {
         })
     );
     this.padText.forEach((t) => t.anchor.set(0.5));
+    this.glowBack.addChild(this.gauge, this.star, this.plankView);
     this.world.addChild(
       this.bg,
       this.dockPanel,
-      this.gauge,
       this.fulcrum,
       this.pads,
       ...this.padText,
-      this.star,
-      this.plankView,
+      this.glowBack,
       this.blockLayer,
       this.fxLayer
     );
     this.app.stage.addChild(this.world);
-    this.fx = new FxController(this.app, this.world, this.fxLayer);
+    this.fx = new FxController(this.app, this.world, this.fxLayer, [
+      this.glowBack,
+      this.fxLayer,
+    ]);
 
     this.app.stage.eventMode = 'static';
     this.app.stage.hitArea = this.app.screen;
