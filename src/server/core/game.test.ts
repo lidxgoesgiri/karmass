@@ -11,6 +11,7 @@ import {
   nextUtcMidnight,
   parseSession,
   pickPractice,
+  practiceCandidates,
   shareText,
   validateDrop,
 } from './game.ts';
@@ -135,15 +136,26 @@ test('next UTC midnight', () => {
   );
 });
 
-test('practice only uses finished editions and avoids immediate repeats', () => {
+test('practice pool: finished editions + practice bank, no immediate repeat', () => {
   const rows = [
     { number: 3, date: '2026-12-03' },
     { number: 2, date: '2026-12-02' },
     { number: 1, date: '2026-12-01' },
   ];
+  const bank = [1001, 1002];
+  assert.deepEqual(
+    practiceCandidates(rows, '2026-12-03', bank),
+    [2, 1, 1001, 1002]
+  );
+  assert.deepEqual(
+    practiceCandidates([rows[0]!], '2026-12-03', bank),
+    bank,
+    'day one: bank only'
+  );
   const first = () => 0;
-  assert.equal(pickPractice(rows, '2026-12-03', 0, first)?.number, 2);
-  assert.equal(pickPractice(rows, '2026-12-03', 2, first)?.number, 1);
-  assert.equal(pickPractice([rows[1]!], '2026-12-03', 2, first)?.number, 2);
-  assert.equal(pickPractice([rows[0]!], '2026-12-03', 0, first), null);
+  assert.equal(pickPractice([2, 1001], 2, first), 1001);
+  assert.equal(pickPractice([1001], 1001, first), 1001);
+  assert.equal(pickPractice([], 0, first), null);
+  assert.equal(editionFor(1001).number, 1001);
+  assert.notEqual(editionFor(1001).prompt, editionFor(1).prompt);
 });

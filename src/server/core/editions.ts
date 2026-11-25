@@ -1,5 +1,7 @@
 import bank from '../data/editions.json' with { type: 'json' };
+import practiceBank from '../data/practice.json' with { type: 'json' };
 import type { Edition, PublicEdition, Theme } from '../../shared/types.ts';
+import { PRACTICE_BASE } from '../../shared/physics.ts';
 
 const THEMES: readonly string[] = [
   'Relatable Habits',
@@ -8,17 +10,31 @@ const THEMES: readonly string[] = [
 ];
 const isTheme = (t: string): t is Theme => THEMES.includes(t);
 
-const EDITIONS: Edition[] = bank.map((e) => {
-  if (!isTheme(e.theme))
-    throw new Error(`Unknown theme in edition #${e.number}: ${e.theme}`);
-  return { ...e, theme: e.theme };
-});
+const typed = (list: typeof bank): Edition[] =>
+  list.map((e) => {
+    if (!isTheme(e.theme))
+      throw new Error(`Unknown theme in edition #${e.number}: ${e.theme}`);
+    return { ...e, theme: e.theme };
+  });
+
+const EDITIONS = typed(bank);
+// Never used for daily posts, so practice is available from day one without leaking editions.
+const PRACTICE = typed(practiceBank);
 
 export const BANK_SIZE = EDITIONS.length;
 
-// Edition numbers keep counting after the bank runs out; content cycles.
+export const PRACTICE_NUMBERS = PRACTICE.map((_, i) => PRACTICE_BASE + i + 1);
+
+const cycle = <T>(list: T[], i: number): T =>
+  list[((i % list.length) + list.length) % list.length]!;
+
+// Daily edition numbers keep counting after the bank runs out; content cycles.
+// Numbers above PRACTICE_BASE address the practice-only bank.
 export const editionFor = (n: number): Edition => {
-  const base = EDITIONS[(((n - 1) % BANK_SIZE) + BANK_SIZE) % BANK_SIZE]!;
+  const base =
+    n > PRACTICE_BASE
+      ? cycle(PRACTICE, n - PRACTICE_BASE - 1)
+      : cycle(EDITIONS, n - 1);
   return { ...base, number: n };
 };
 

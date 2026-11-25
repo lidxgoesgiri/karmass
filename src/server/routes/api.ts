@@ -16,7 +16,12 @@ import type {
   SplashData,
   VoteRequest,
 } from '../../shared/types';
-import { blankPrompt, editionFor, publicEdition } from '../core/editions';
+import {
+  PRACTICE_NUMBERS,
+  blankPrompt,
+  editionFor,
+  publicEdition,
+} from '../core/editions';
 import {
   countVotes,
   currentPercents,
@@ -27,6 +32,7 @@ import {
   nextStreak,
   nextUtcMidnight,
   pickPractice,
+  practiceCandidates,
   shareText,
   utcDate,
   validateDrop,
@@ -324,17 +330,20 @@ api.post('/flair', async (c) => {
   return c.json<Player>(player);
 });
 
-// Unlimited practice on finished editions: final weights are public, nothing is stored.
+// Unlimited practice: finished daily editions (final weights) + the practice-only bank (seed
+// weights). Both are safe to send to the client; nothing is stored.
 api.get('/practice', async (c) => {
-  const pick = pickPractice(
-    await listReleased(60),
-    utcDate(Date.now()),
+  const today = utcDate(Date.now());
+  const n = pickPractice(
+    practiceCandidates(await listReleased(60), today, PRACTICE_NUMBERS),
     Number(c.req.query('exclude') ?? 0),
     Math.random
   );
-  if (!pick) return fail(c, 'Practice unlocks once the first daily edition has ended.', 404);
+  if (n === null) return fail(c, 'Practice is not available right now.', 404);
+  const fromBank = PRACTICE_NUMBERS.includes(n);
+  const date = fromBank ? '' : ((await getEditionMeta(n))?.date ?? '');
   return c.json<PracticeRound>({
-    edition: publicEdition(pick.number, pick.date),
-    percents: currentPercents(editionFor(pick.number), await getVotes(pick.number)),
+    edition: publicEdition(n, date),
+    percents: currentPercents(editionFor(n), fromBank ? {} : await getVotes(n)),
   });
 });

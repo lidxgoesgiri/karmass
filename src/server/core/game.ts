@@ -129,15 +129,27 @@ export const shareText = (
   ].join('\n');
 };
 
-// Practice draws from editions whose live day is over (never today's or future prompts),
-// avoiding an immediate repeat when there is more than one to choose from.
-export const pickPractice = <T extends { number: number; date: string }>(
-  released: T[],
+// Practice candidates: finished daily editions plus the practice-only bank (never today's or
+// future daily prompts). Avoids repeating the edition currently on screen.
+export const practiceCandidates = (
+  released: { number: number; date: string }[],
   today: string,
+  bankNumbers: number[]
+): number[] => [
+  ...released
+    .filter((r) => r.date !== '' && r.date < today)
+    .map((r) => r.number),
+  ...bankNumbers,
+];
+
+export const pickPractice = (
+  candidates: number[],
   exclude: number,
   rand: () => number
-): T | null => {
-  const past = released.filter((r) => r.date !== '' && r.date < today);
-  const pool = past.length > 1 ? past.filter((r) => r.number !== exclude) : past;
+): number | null => {
+  const pool =
+    candidates.length > 1
+      ? candidates.filter((n) => n !== exclude)
+      : candidates;
   return pool[Math.floor(rand() * pool.length)] ?? null;
 };

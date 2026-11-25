@@ -1,6 +1,10 @@
 import { Fragment } from 'react';
 import type { GameState } from '../../shared/types';
-import { BALANCE_THRESHOLD, MAX_ATTEMPTS } from '../../shared/physics';
+import {
+  BALANCE_THRESHOLD,
+  MAX_ATTEMPTS,
+  PRACTICE_BASE,
+} from '../../shared/physics';
 import { pad3 } from '../api';
 import { CloseIcon, SoundIcon } from './Icons';
 
@@ -31,7 +35,7 @@ const hintFor = (
     case 'weigh':
       if (retry) return 'Use the revealed weights to deduce a balanced pair.';
       if (practice)
-        return 'Practice · past edition · unlimited rounds, no score or streak.';
+        return 'Practice · unlimited rounds · no score, streak or votes.';
       if (game.mode === 'archive')
         return 'Archive edition · final weights · streaks unaffected.';
       if (!game.player.loggedIn)
@@ -70,7 +74,12 @@ export const PromptHeader = ({
     <header className="mx-auto w-full max-w-[720px] shrink-0 px-3 pt-2 pb-1.5">
       <div className="flex min-h-11 items-center gap-2 font-mono text-[10.5px] tracking-[0.14em] text-muted">
         <span className="shrink-0 text-ink">
-          KARMASS #{game ? pad3(game.edition.number) : '---'}
+          KARMASS
+          {!game
+            ? ' #---'
+            : game.edition.number > PRACTICE_BASE
+              ? ''
+              : ` #${pad3(game.edition.number)}`}
         </span>
         {game && practice && (
           <button

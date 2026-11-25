@@ -8,20 +8,30 @@ import {
   weightDelta,
 } from '../../shared/physics.ts';
 
-const editions: Edition[] = JSON.parse(
-  readFileSync(new URL('./editions.json', import.meta.url), 'utf8')
-);
+const load = (file: string): Edition[] =>
+  JSON.parse(readFileSync(new URL(file, import.meta.url), 'utf8'));
+const editions = load('./editions.json');
+const practice = load('./practice.json');
 
 const MAX_LABEL_CHARS = 25; // 3-column dock at 360px wide wraps to 2 lines max
+
+test('bank numbering is sequential', () => {
+  for (const list of [editions, practice])
+    list.forEach((ed, i) => assert.equal(ed.number, i + 1));
+});
 
 test('edition bank invariants (PRD §6 curation criteria)', () => {
   assert.ok(
     editions.length >= 24,
     'bank must cover launch through the Dec 16 judging end'
   );
-  editions.forEach((ed, i) => {
+  assert.ok(practice.length >= 10, 'practice works from day one');
+  const daily = new Set(editions.map((e) => e.prompt));
+  practice.forEach((p) =>
+    assert.ok(!daily.has(p.prompt), 'practice never reuses a daily prompt')
+  );
+  [...editions, ...practice].forEach((ed) => {
     const where = `edition #${ed.number}`;
-    assert.equal(ed.number, i + 1, `${where}: numbers must be sequential`);
     assert.ok(
       ed.prompt.includes('{A}') && ed.prompt.includes('{B}'),
       `${where}: slots`

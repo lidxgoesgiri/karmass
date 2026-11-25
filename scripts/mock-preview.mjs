@@ -4,6 +4,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { preview } from 'vite';
 import {
+  PRACTICE_NUMBERS,
   editionFor,
   publicEdition,
   blankPrompt,
@@ -17,6 +18,7 @@ import {
   isOption,
   nextUtcMidnight,
   pickPractice,
+  practiceCandidates,
   utcDate,
   validateDrop,
   DAY_MS,
@@ -66,22 +68,32 @@ const api = async (req, res, url, guest) => {
   };
   if (route === 'practice') {
     const rows = [...released].map(([number, d]) => ({ number, date: d }));
-    const pick = pickPractice(rows, utcDate(Date.now()), Number(url.searchParams.get('exclude') ?? 0), Math.random);
-    if (!pick) return json(res, 404, { error: 'Practice unlocks once the first daily edition has ended.' });
-    return json(res, 200, { edition: publicEdition(pick.number, pick.date), percents: currentPercents(editionFor(pick.number), votes.get(pick.number) ?? {}) });
+    const pick = pickPractice(
+      practiceCandidates(rows, utcDate(Date.now()), PRACTICE_NUMBERS),
+      Number(url.searchParams.get('exclude') ?? 0),
+      Math.random
+    );
+    if (pick === null)
+      return json(res, 404, { error: 'Practice is not available right now.' });
+    const fromBank = PRACTICE_NUMBERS.includes(pick);
+    return json(res, 200, {
+      edition: publicEdition(pick, fromBank ? '' : released.get(pick)),
+      percents: currentPercents(
+        editionFor(pick),
+        fromBank ? {} : (votes.get(pick) ?? {})
+      ),
+    });
   }
   if (route === 'archive')
     return json(
       res,
       200,
-      [...released]
-        .reverse()
-        .map(([num, d]) => ({
-          number: num,
-          date: d,
-          prompt: blankPrompt(editionFor(num).prompt),
-          live: d === utcDate(Date.now()),
-        }))
+      [...released].reverse().map(([num, d]) => ({
+        number: num,
+        date: d,
+        prompt: blankPrompt(editionFor(num).prompt),
+        live: d === utcDate(Date.now()),
+      }))
     );
   if (!date)
     return json(res, 404, { error: 'This edition is not available yet.' });

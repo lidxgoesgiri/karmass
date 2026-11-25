@@ -1,0 +1,158 @@
+[
+  {
+    "number": 1,
+    "theme": "Relatable Habits",
+    "prompt": "The two things people lose most often inside their own home are {A} and {B}.",
+    "options": [
+      { "id": "o1", "label": "TV remote", "seedVotes": 26 },
+      { "id": "o2", "label": "Keys", "seedVotes": 23 },
+      { "id": "o3", "label": "Phone", "seedVotes": 19 },
+      { "id": "o4", "label": "Glasses", "seedVotes": 12 },
+      { "id": "o5", "label": "Phone charger", "seedVotes": 11 },
+      { "id": "o6", "label": "Hair ties", "seedVotes": 9 }
+    ]
+  },
+  {
+    "number": 2,
+    "theme": "Internet & Tech",
+    "prompt": "The two most annoying things about online meetings are {A} and {B}.",
+    "options": [
+      { "id": "o1", "label": "\"Can you see my screen?\"", "seedVotes": 24 },
+      { "id": "o2", "label": "Awkward silences", "seedVotes": 18 },
+      { "id": "o3", "label": "Talking while muted", "seedVotes": 22 },
+      { "id": "o4", "label": "Late joiners", "seedVotes": 14 },
+      { "id": "o5", "label": "Camera-off meetings", "seedVotes": 9 },
+      { "id": "o6", "label": "Could be an email", "seedVotes": 13 }
+    ]
+  },
+  {
+    "number": 3,
+    "theme": "Reddit Classics",
+    "prompt": "The two pets people secretly wish they could have are {A} and {B}.",
+    "options": [
+      { "id": "o1", "label": "Red panda", "seedVotes": 25 },
+      { "id": "o2", "label": "Capybara", "seedVotes": 21 },
+      { "id": "o3", "label": "Otter", "seedVotes": 18 },
+      { "id": "o4", "label": "Penguin", "seedVotes": 15 },
+      { "id": "o5", "label": "Sloth", "seedVotes": 12 },
+      { "id": "o6", "label": "Fennec fox", "seedVotes": 9 }
+    ]
+  },
+  {
+    "number": 4,
+    "theme": "Relatable Habits",
+    "prompt": "The two things that make a Monday instantly better are {A} and {B}.",
+    "options": [
+      { "id": "o1", "label": "Good coffee", "seedVotes": 27 },
+      { "id": "o2", "label": "Canceled meeting", "seedVotes": 22 },
+      { "id": "o3", "label": "Sunny weather", "seedVotes": 14 },
+      { "id": "o4", "label": "Leftover pizza", "seedVotes": 12 },
+      { "id": "o5", "label": "Payday", "seedVotes": 17 },
+      { "id": "o6", "label": "Short commute", "seedVotes": 8 }
+    ]
+  },
+  {
+    "number": 5,
+    "theme": "Internet & Tech",
+    "prompt": "The two phone habits people quietly judge others for are {A} and {B}.",
+    "options": [
+      { "id": "o1", "label": "Speakerphone in public", "seedVotes": 26 },
+      { "id": "o2", "label": "Hundreds of open tabs", "seedVotes": 12 },
+      { "id": "o3", "label": "Thousands of unread", "seedVotes": 18 },
+      { "id": "o4", "label": "Cracked screen", "seedVotes": 10 },
+      { "id": "o5", "label": "Max brightness", "seedVotes": 9 },
+      { "id": "o6", "label": "One-finger typing", "seedVotes": 25 }
+    ]
+  },
+  {
+    "number": 6,
+    "theme": "Reddit Classics",
+    "prompt": "The two best things to find in an old jacket pocket are {A} and {B}.",
+    "options": [
+      { "id": "o1", "label": "Cash", "seedVotes": 28 },
+      { "id": "o2", "label": "Concert ticket", "seedVotes": 12 },
+      { "id": "o3", "label": "Lost earbuds", "seedVotes": 19 },
+      { "id": "o4", "label": "Lip balm", "seedVotes": 9 },
+      { "id": "o5", "label": "Candy", "seedVotes": 14 },
+      { "id": "o6", "label": "Old receipt", "seedVotes": 18 }
+    ]
+  },
+  {
+    "number": 7,
+    "theme": "Relatable Habits",
+    "prompt": "The two chores that feel most satisfying once finished are {A} and {B}.",
+    "options": [
+      { "id": "o1", "label": "Fresh bed sheets", "seedVotes": 25 },
+      { "id": "o2", "label": "Vacuuming", "seedVotes": 16 },
+      { "id": "o3", "label": "Empty sink", "seedVotes": 21 },
+      { "id": "o4", "label": "Organized closet", "seedVotes": 18 },
+      { "id": "o5", "label": "Mowed lawn", "seedVotes": 11 },
+      { "id": "o6", "label": "Clean car", "seedVotes": 9 }
+    ]
+  },
+  {
+    "number": 8,
+    "theme": "Reddit Classics",
+    "prompt": "The two things that ruin a good movie night are {A} and {B}.",
+    "options": [
+      { "id": "o1", "label": "Choosing the movie", "seedVotes": 26 },
+      { "id": "o2", "label": "Spoilers", "seedVotes": 21 },
+      { "id": "o3", "label": "Bad snacks", "seedVotes": 9 },
+      { "id": "o4", "label": "Phone notifications", "seedVotes": 13 },
+      { "id": "o5", "label": "Talking during it", "seedVotes": 19 },
+      { "id": "o6", "label": "Buffering", "seedVotes": 12 }
+    ]
+  },
+  {
+    "number": 9,
+    "theme": "Internet & Tech",
+    "prompt": "The two apps people open without even thinking are {A} and {B}.",
+    "options": [
+      { "id": "o1", "label": "Messages", "seedVotes": 27 },
+      { "id": "o2", "label": "Weather", "seedVotes": 11 },
+      { "id": "o3", "label": "Email", "seedVotes": 15 },
+      { "id": "o4", "label": "Photos", "seedVotes": 9 },
+      { "id": "o5", "label": "Calendar", "seedVotes": 13 },
+      { "id": "o6", "label": "Social feed", "seedVotes": 25 }
+    ]
+  },
+  {
+    "number": 10,
+    "theme": "Relatable Habits",
+    "prompt": "While waiting for food to heat up, people usually {A} or {B}.",
+    "options": [
+      { "id": "o1", "label": "Scroll their phone", "seedVotes": 27 },
+      { "id": "o2", "label": "Stare at the microwave", "seedVotes": 22 },
+      { "id": "o3", "label": "Tidy the counter", "seedVotes": 12 },
+      { "id": "o4", "label": "Grab a drink", "seedVotes": 16 },
+      { "id": "o5", "label": "Hum a song", "seedVotes": 8 },
+      { "id": "o6", "label": "Check the fridge again", "seedVotes": 15 }
+    ]
+  },
+  {
+    "number": 11,
+    "theme": "Reddit Classics",
+    "prompt": "The two best seats on a long road trip are {A} and {B}.",
+    "options": [
+      { "id": "o1", "label": "Front passenger", "seedVotes": 27 },
+      { "id": "o2", "label": "Driver seat", "seedVotes": 18 },
+      { "id": "o3", "label": "Back window seat", "seedVotes": 22 },
+      { "id": "o4", "label": "Middle back seat", "seedVotes": 7 },
+      { "id": "o5", "label": "Lie-flat back row", "seedVotes": 14 },
+      { "id": "o6", "label": "Next to the snacks", "seedVotes": 12 }
+    ]
+  },
+  {
+    "number": 12,
+    "theme": "Internet & Tech",
+    "prompt": "The two things everyone does first with a brand-new phone are {A} and {B}.",
+    "options": [
+      { "id": "o1", "label": "Change the wallpaper", "seedVotes": 24 },
+      { "id": "o2", "label": "Peel the screen film", "seedVotes": 20 },
+      { "id": "o3", "label": "Restore old apps", "seedVotes": 22 },
+      { "id": "o4", "label": "Set a ringtone", "seedVotes": 9 },
+      { "id": "o5", "label": "Take a selfie", "seedVotes": 12 },
+      { "id": "o6", "label": "Buy a case", "seedVotes": 13 }
+    ]
+  }
+]

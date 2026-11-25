@@ -7,7 +7,9 @@ export const BALANCE_THRESHOLD = 4; // max |P_A - P_B| in percentage points that
 export const MAX_ATTEMPTS = 3;
 export const PRIOR_VOTES = 100; // virtual seed votes per edition (Bayesian prior)
 export const DEG_PER_POINT = 2; // visual tilt per percentage point → balanced zone is ±8°
-export const MAX_TILT_DEG = 25; // visual clamp for a fully tipped plank
+export const MAX_TILT_DEG = 25;
+// Practice-only prompts use edition numbers above this (daily numbers never get there).
+export const PRACTICE_BASE = 1000; // visual clamp for a fully tipped plank
 export const BALANCED_ZONE_DEG = BALANCE_THRESHOLD * DEG_PER_POINT;
 
 export type Tier = 'perfect' | 'solid' | 'close';
