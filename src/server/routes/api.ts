@@ -30,6 +30,7 @@ import {
   flairText,
   isOption,
   nextStreak,
+  inLiveGrace,
   nextUtcMidnight,
   pickPractice,
   practiceCandidates,
@@ -79,7 +80,10 @@ const whoAmI = (): string | null =>
 
 type Resolved = { n: number; meta: EditionMeta; mode: Mode };
 
-const resolveEdition = async (requested: unknown): Promise<Resolved | null> => {
+const resolveEdition = async (
+  requested: unknown,
+  who: string | null = null
+): Promise<Resolved | null> => {
   const fromPost =
     typeof context.postData?.edition === 'number'
       ? context.postData.edition
@@ -90,11 +94,14 @@ const resolveEdition = async (requested: unknown): Promise<Resolved | null> => {
   if (!Number.isInteger(n) || n < 1) return null;
   const meta = await getEditionMeta(n); // only released editions are playable (no future leaks)
   if (!meta) return null;
-  return {
-    n,
-    meta,
-    mode: meta.date === utcDate(Date.now()) ? 'live' : 'archive',
-  };
+  const now = Date.now();
+  if (meta.date === utcDate(now)) return { n, meta, mode: 'live' };
+  // Grace: a player who started yesterday's live run just before midnight can finish it live.
+  if (who && inLiveGrace(meta.date, now)) {
+    const s = await loadSession(n, who, 'live');
+    if (s.vote || s.attempts.length) return { n, meta, mode: 'live' };
+  }
+  return { n, meta, mode: 'archive' };
 };
 
 const activeStreak = (user: UserRecord, today: string): number => {
@@ -122,9 +129,9 @@ const loadPlayer = async (): Promise<Player> =>
   playerFor(context.userId ? await getUser(context.userId) : null);
 
 api.get('/splash', async (c) => {
-  const ed = await resolveEdition(c.req.query('edition'));
-  if (!ed) return fail(c, 'This edition is not available yet.', 404);
   const who = whoAmI();
+  const ed = await resolveEdition(c.req.query('edition'), who);
+  if (!ed) return fail(c, 'This edition is not available yet.', 404);
   const [votes, session, player] = await Promise.all([
     getVotes(ed.n),
     who ? loadSession(ed.n, who, ed.mode) : null,
@@ -144,9 +151,9 @@ api.get('/splash', async (c) => {
 });
 
 api.get('/state', async (c) => {
-  const ed = await resolveEdition(c.req.query('edition'));
-  if (!ed) return fail(c, 'This edition is not available yet.', 404);
   const who = whoAmI();
+  const ed = await resolveEdition(c.req.query('edition'), who);
+  if (!ed) return fail(c, 'This edition is not available yet.', 404);
   if (!who) return fail(c, 'Sign in to play Karmass.', 401);
   const [votes, session, player] = await Promise.all([
     getVotes(ed.n),
@@ -181,9 +188,9 @@ api.post('/vote', async (c) => {
 
 api.post('/drop', async (c) => {
   const body = await c.req.json<DropRequest>().catch(() => null);
-  const ed = await resolveEdition(body?.edition);
-  if (!ed) return fail(c, 'This edition is not available.', 404);
   const who = whoAmI();
+  const ed = await resolveEdition(body?.edition, who);
+  if (!ed) return fail(c, 'This edition is not available.', 404);
   if (!who) return fail(c, 'Sign in to play Karmass.', 401);
 
   const edition = editionFor(ed.n);
@@ -230,7 +237,8 @@ api.post('/drop', async (c) => {
       attempt.delta,
       index,
       final.score,
-      now
+      now,
+      ed.meta.date
     );
   }
 
@@ -249,11 +257,12 @@ async function recordLiveFinish(
   delta: number,
   attempts: number,
   points: number | null,
-  now: number
+  now: number,
+  editionDate: string
 ): Promise<void> {
   try {
     const user = await getUser(userId);
-    const streak = nextStreak(user.streak, utcDate(now));
+    const streak = nextStreak(user.streak, editionDate);
     await saveStreak(userId, streak);
     if (points === null) return;
     const snoovatar = context.snoovatar ?? (await snoovatarFor(username));
@@ -271,7 +280,7 @@ async function recordLiveFinish(
 
 api.post('/share', async (c) => {
   const body = await c.req.json<ShareRequest>().catch(() => null);
-  const ed = await resolveEdition(body?.edition);
+  const ed = await resolveEdition(body?.edition, context.userId ?? null);
   if (!ed) return fail(c, 'This edition is not available.', 404);
   if (!context.userId || !context.username)
     return fail(c, 'Sign in to share.', 401);

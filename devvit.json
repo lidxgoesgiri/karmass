@@ -53,6 +53,9 @@
       }
     ]
   },
+  "forms": {
+    "publishEdition": "/internal/form/publish-edition"
+  },
   "triggers": {
     "onAppInstall": "/internal/triggers/on-app-install",
     "onPostDelete": "/internal/triggers/on-post-delete"

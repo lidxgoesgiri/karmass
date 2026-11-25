@@ -15,7 +15,8 @@
     "../src/server/**/*.json"
   ],
   "exclude": [
-    "../src/**/*.test.ts"
+    "../src/**/*.test.ts",
+    "../src/**/*.spec.ts"
   ],
   "references": [
     {

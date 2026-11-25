@@ -329,35 +329,41 @@ export class KarmassEngine {
     s.sprite.cursor = this.mode === 'weigh' ? 'grab' : 'pointer';
     this.hoverPad = null;
 
+    if (!d.moved) return this.tap(d.id);
+    if (this.mode !== 'weigh') return;
+    const pad = this.padAt(s.sprite.x, s.sprite.y);
+    const back = this.isOverDock(s.sprite.y) ? 'dock' : d.from;
+    this.place(d.id, pad ?? (d.from === 'dock' ? 'dock' : back));
+    this.drawPads();
+    this.emitSlots();
+  }
+
+  // Tap (pointer, keyboard or screen reader): vote pick, or quick-slot A then B
+  // (a full B is swapped back to the dock); tapping a slotted block returns it.
+  tap(id: string): void {
+    const s = this.slots.get(id);
+    if (!s || this.phase !== 'idle') return;
     if (this.mode === 'vote') {
-      if (d.moved) return;
-      this.votePick = this.votePick === d.id ? null : d.id;
-      this.slots.forEach((o, id) =>
-        o.sprite.setLook(id === this.votePick ? 'vote' : 'idle')
+      this.votePick = this.votePick === id ? null : id;
+      this.slots.forEach((o, oid) =>
+        o.sprite.setLook(oid === this.votePick ? 'vote' : 'idle')
       );
       sound.play('tick');
       this.hooks.onVotePick(this.votePick);
       return;
     }
     if (this.mode !== 'weigh') return;
+    if (s.place === 'dock')
+      this.place(id, this.occupant('left') ? 'right' : 'left');
+    else this.place(id, 'dock');
+    this.drawPads();
+    this.emitSlots();
+  }
 
-    if (!d.moved) {
-      // Tap = quick-slot: fill A, then B (a full B is swapped back to the dock).
-      if (s.place === 'dock')
-        this.place(d.id, this.occupant('left') ? 'right' : 'left');
-      else this.place(d.id, 'dock');
-    } else {
-      const pad = this.padAt(s.sprite.x, s.sprite.y);
-      this.place(
-        d.id,
-        pad ??
-          (d.from === 'dock'
-            ? 'dock'
-            : this.isOverDock(s.sprite.y)
-              ? 'dock'
-              : d.from)
-      );
-    }
+  clearSlots(): void {
+    if (this.mode !== 'weigh' || this.phase !== 'idle') return;
+    this.slots.forEach((s) => (s.place = 'dock'));
+    this.retarget();
     this.drawPads();
     this.emitSlots();
   }

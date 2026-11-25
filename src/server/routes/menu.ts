@@ -1,22 +1,35 @@
 import { Hono } from 'hono';
 import type { UiResponse } from '@devvit/web/shared';
-import { publishEdition } from '../core/postScheduler';
+import { utcDate } from '../core/game';
+import { isDailyPublished } from '../services/hivemindRedis';
 
 export const menu = new Hono();
 
-// Moderator tool: publishes the next edition immediately (demo posts, missed cron days).
+// Moderator tool: asks for confirmation first so a stray click never doubles today's edition.
 menu.post('/post-create', async (c) => {
-  try {
-    const post = await publishEdition();
-    return c.json<UiResponse>(
-      { navigateTo: `https://www.reddit.com${post.permalink}` },
-      200
-    );
-  } catch (error) {
-    console.error(`Error creating post: ${error}`);
-    return c.json<UiResponse>(
-      { showToast: 'Failed to create Karmass post' },
-      400
-    );
-  }
+  const today = utcDate(Date.now());
+  const already = await isDailyPublished(today);
+  return c.json<UiResponse>(
+    {
+      showForm: {
+        name: 'publishEdition',
+        form: {
+          title: 'Publish next Karmass edition',
+          description: already
+            ? `Today's edition (${today} UTC) is already live. Publishing now adds another live edition for today.`
+            : `No edition has been published for ${today} UTC yet.`,
+          fields: [
+            {
+              type: 'boolean',
+              name: 'confirm',
+              label: 'Yes, publish the next edition now',
+              defaultValue: false,
+            },
+          ],
+          acceptLabel: 'Publish',
+        },
+      },
+    },
+    200
+  );
 });

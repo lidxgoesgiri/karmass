@@ -13,6 +13,12 @@ export const DAY_MS = 86_400_000;
 export const utcDate = (ms: number): string =>
   new Date(ms).toISOString().slice(0, 10);
 
+// A live run started before 00:00 UTC may finish in live mode for this long afterwards.
+export const LIVE_GRACE_MS = 2 * 60 * 60 * 1000;
+
+export const inLiveGrace = (editionDate: string, now: number): boolean =>
+  editionDate === utcDate(now - DAY_MS) && now % DAY_MS < LIVE_GRACE_MS;
+
 export const nextUtcMidnight = (ms: number): number =>
   (Math.floor(ms / DAY_MS) + 1) * DAY_MS;
 

@@ -9,7 +9,8 @@
     "rootDir": "../src"
   },
   "include": [
-    "../src/**/*.test.ts"
+    "../src/**/*.test.ts",
+    "../src/**/*.spec.ts"
   ],
   "exclude": [],
   "references": [

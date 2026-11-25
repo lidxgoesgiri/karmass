@@ -14,6 +14,7 @@ export type Edition = {
   theme: Theme;
   prompt: string; // contains the literal tokens {A} and {B}
   options: EditionOption[];
+  credit?: string; // Reddit username of the community member who suggested the prompt
 };
 
 export type PublicOption = { id: string; label: string };
@@ -23,6 +24,7 @@ export type PublicEdition = {
   theme: Theme;
   prompt: string;
   date: string; // UTC YYYY-MM-DD the edition went live
+  credit?: string;
   options: PublicOption[]; // display order is shuffled server-side
 };
 

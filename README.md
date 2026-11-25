@@ -9,12 +9,11 @@ Every day brings a fresh prompt with two blanks and six word blocks. Each block 
 2. Drop two blocks on a seesaw.
 3. If the crowd weighs them nearly the same, the plank balances.
 
-|                |                                                                                   |
-| -------------- | --------------------------------------------------------------------------------- |
-| App listing    | `https://developers.reddit.com/apps/karmass-game` _(TODO after first `devvit upload`)_ |
-| Test subreddit | `r/TODO` _(public, fewer than 200 members)_                                       |
-| Live demo post | _(TODO)_                                                                          |
-| Demo video     | _(TODO: under 60 seconds, public on YouTube)_                                     |
+|             |                                                                        |
+| ----------- | ---------------------------------------------------------------------- |
+| App listing | https://developers.reddit.com/apps/karmass-game                        |
+| Play it     | https://www.reddit.com/r/Karmass/ (today's edition is the newest post) |
+| Demo video  | _(coming soon: under 60 seconds, public on YouTube)_                   |
 
 ## How to play
 
@@ -26,6 +25,10 @@ Every day brings a fresh prompt with two blanks and six word blocks. Each block 
    - **Balanced:** the two weights differ by **4 points or less**. You win.
    - **Tipped:** the two weights you tested stay revealed on the dock. Use them to deduce a better pair.
 5. You have **3 drops** per day. When you finish, all six weights unlock.
+6. **Practice ∞.** After finishing, play unlimited practice rounds on past editions and a practice-only prompt bank. Practice has no score, streak or votes.
+
+New here? Tap **?** in the game header for the 30-second guide.
+On desktop you can play with the keyboard: `1`–`6` pick a word, `Enter` confirms, `Backspace` clears the slots.
 
 ### Scoring
 
@@ -50,6 +53,7 @@ Leaderboard score: `(100 − Δ) × 10 + (4 − drops used) × 25`. Ties go to w
 - **Spoiler-free sharing.**
   - One tap posts your drop log, never the words, as a reply to the post's pinned comment.
   - Sharing is never automatic.
+- **Community prompts.** The pinned comment on every edition invites players to pitch future prompts; picked prompts show _Prompt by u/name_ in the game header.
 - **Follows your Reddit theme.** Signature dark neon look by default; switches to a light palette when Reddit is in light mode.
 - **Honest cold start.**
   - Each edition starts from 100 curated starter votes so the first player gets meaningful physics.
@@ -85,7 +89,7 @@ npm install
 npx devvit login               # once
 npm run dev                    # playtest on your dev subreddit
 npm run build && npm run preview   # local QA without Reddit (mock API)
-npm run check                  # types, lint, unit tests, build, bundle budget (< 1.5 MB gzipped)
+npm run check                  # types, lint, unit + API route tests, build, bundle budget (< 1.5 MB gzipped)
 npm run deploy                 # check + devvit upload (this app is never published during the hackathon)
 ```
 

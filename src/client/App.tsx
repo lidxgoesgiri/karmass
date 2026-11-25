@@ -19,6 +19,8 @@ import {
 } from './api';
 import { ActionBar } from './components/ActionBar';
 import { EndStateCard } from './components/EndStateCard';
+import { HowToPlay } from './components/HowToPlay';
+import { hasSeenHelp, markHelpSeen } from './hooks';
 import { PromptHeader, type Phase } from './components/PromptHeader';
 import { KarmassEngine } from './game/KarmassEngine';
 import { sound } from './game/SoundSynth';
@@ -85,6 +87,7 @@ export const App = () => {
   // Practice: final weights of a past edition, evaluated locally (no score, no storage).
   const [practice, setPractice] = useState<Record<string, number> | null>(null);
   const dailyRef = useRef<GameState | null>(null);
+  const [helpOpen, setHelpOpen] = useState(() => !hasSeenHelp());
 
   const apply = useCallback((g: GameState) => {
     const engine = engineRef.current;
@@ -261,6 +264,46 @@ export const App = () => {
     setMuted(!muted);
   };
 
+  const closeHelp = () => {
+    markHelpSeen();
+    setHelpOpen(false);
+  };
+
+  // Keyboard play: 1-6 pick a word, Enter confirms the primary action, Backspace/Escape clears.
+  const keyRef = useRef<(e: KeyboardEvent) => void>(() => {});
+  const onKeyLatest = (e: KeyboardEvent) => {
+    if (helpOpen || cardOpen || e.metaKey || e.ctrlKey || e.altKey) return;
+    const engine = engineRef.current;
+    const n = Number(e.key);
+    if (Number.isInteger(n) && n >= 1 && n <= 6) {
+      const option = game?.edition.options[n - 1];
+      if (option) engine?.tap(option.id);
+      return;
+    }
+    if (e.key === 'Backspace' || e.key === 'Escape')
+      return engine?.clearSlots();
+    if (e.key !== 'Enter') return;
+    if (phase === 'vote' && votePick) void lockVote();
+    else if (phase === 'weigh' && slots.left && slots.right) void drop();
+    else if (phase === 'result') retry();
+    else if (phase === 'final' && practice) void startPractice();
+  };
+  useEffect(() => {
+    keyRef.current = onKeyLatest; // latest state without re-binding the listener
+  });
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (
+        e.target instanceof HTMLElement &&
+        e.target.closest('button, input, textarea')
+      )
+        return;
+      keyRef.current(e);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   // Finished sessions show the last tested pair in the prompt instead of empty slots.
   const shownPair =
     phase === 'final' ? (game?.session.attempts.at(-1) ?? null) : null;
@@ -281,9 +324,21 @@ export const App = () => {
           }
           muted={muted}
           onToggleMute={toggleMute}
+          onHelp={() => setHelpOpen(true)}
         />
         <div className="relative min-h-0 flex-1">
           <div ref={stageRef} className="absolute inset-0 touch-none" />
+          {game && (phase === 'vote' || phase === 'weigh') && (
+            <ul className="sr-only" aria-label="Word blocks">
+              {game.edition.options.map((o, i) => (
+                <li key={o.id}>
+                  <button onClick={() => engineRef.current?.tap(o.id)}>
+                    {`${i + 1}. ${phase === 'vote' ? 'Vote for' : 'Place or remove'} ${o.label}`}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
           {phase === 'loading' && (
             <p className="pointer-events-none absolute inset-x-0 top-1/3 text-center font-mono text-[12px] tracking-[0.2em] text-muted">
               WEIGHING THE HIVEMIND…
@@ -311,6 +366,9 @@ export const App = () => {
           onResults={() => setCardOpen(true)}
           onReload={() => void load(game?.edition.number ?? postEdition())}
         />
+        <AnimatePresence>
+          {helpOpen && <HowToPlay onClose={closeHelp} />}
+        </AnimatePresence>
         <AnimatePresence>
           {cardOpen && game && (
             <EndStateCard

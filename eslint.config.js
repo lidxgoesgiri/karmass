@@ -56,7 +56,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['src/**/*.test.ts'],
+    files: ['src/**/*.test.ts', 'src/**/*.spec.ts'],
     languageOptions: {
       globals: globals.node,
       parserOptions: {
@@ -78,6 +78,7 @@ export default defineConfig([
       '**/build/**',
       'eslint.config.js',
       '**/vite.config.ts',
+      '**/vitest.config.ts',
       'devvit.config.ts',
     ],
     languageOptions: {
@@ -90,7 +91,7 @@ export default defineConfig([
   },
   {
     // node:test's test() returns a promise the runner already tracks.
-    files: ['src/**/*.test.ts'],
+    files: ['src/**/*.test.ts', 'src/**/*.spec.ts'],
     rules: { '@typescript-eslint/no-floating-promises': 'off' },
   },
 ]);

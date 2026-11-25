@@ -63,3 +63,21 @@ export const formatCountdown = (ms: number): string => {
   const ss = String(s % 60).padStart(2, '0');
   return `${hh}:${mm}:${ss}`;
 };
+
+const SEEN_KEY = 'karmass:seenHelp';
+
+export const hasSeenHelp = (): boolean => {
+  try {
+    return localStorage.getItem(SEEN_KEY) === '1';
+  } catch {
+    return true; // storage blocked: don't nag on every visit
+  }
+};
+
+export const markHelpSeen = (): void => {
+  try {
+    localStorage.setItem(SEEN_KEY, '1');
+  } catch {
+    // storage unavailable inside some WebViews
+  }
+};

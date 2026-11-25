@@ -6,6 +6,7 @@ import {
   evaluateDrop,
   finalize,
   flairText,
+  inLiveGrace,
   leaderboardScore,
   nextStreak,
   nextUtcMidnight,
@@ -158,4 +159,12 @@ test('practice pool: finished editions + practice bank, no immediate repeat', ()
   assert.equal(pickPractice([], 0, first), null);
   assert.equal(editionFor(1001).number, 1001);
   assert.notEqual(editionFor(1001).prompt, editionFor(1).prompt);
+});
+
+test('live grace: only the first hours after UTC midnight, only for yesterday', () => {
+  const at = (iso: string) => Date.parse(iso);
+  assert.equal(inLiveGrace('2026-12-01', at('2026-12-02T01:30:00Z')), true);
+  assert.equal(inLiveGrace('2026-12-01', at('2026-12-02T02:30:00Z')), false);
+  assert.equal(inLiveGrace('2026-11-30', at('2026-12-02T01:00:00Z')), false);
+  assert.equal(inLiveGrace('2026-12-02', at('2026-12-02T01:00:00Z')), false);
 });

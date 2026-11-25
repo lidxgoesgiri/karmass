@@ -20,6 +20,7 @@ type Props = {
   muted: boolean;
   onToggleMute: () => void;
   onExitPractice: () => void;
+  onHelp: () => void;
 };
 
 const hintFor = (
@@ -67,6 +68,7 @@ export const PromptHeader = ({
   muted,
   onToggleMute,
   onExitPractice,
+  onHelp,
 }: Props) => {
   const used = game?.session.attempts.length ?? 0;
   const parts = (game?.edition.prompt ?? '').split(/(\{A\}|\{B\})/);
@@ -116,7 +118,14 @@ export const PromptHeader = ({
           ))}
         </span>
         <button
-          className="-mr-2 grid size-11 shrink-0 place-items-center rounded-full text-muted hover:text-ink"
+          className="grid size-11 shrink-0 place-items-center rounded-full font-mono text-[15px] font-bold text-muted hover:text-ink"
+          onClick={onHelp}
+          aria-label="How to play"
+        >
+          ?
+        </button>
+        <button
+          className="-mr-2 -ml-2 grid size-11 shrink-0 place-items-center rounded-full text-muted hover:text-ink"
           onClick={onToggleMute}
           aria-label={muted ? 'Unmute sound' : 'Mute sound'}
         >
@@ -138,6 +147,11 @@ export const PromptHeader = ({
       </p>
       <p className="mt-1 text-[12px] leading-tight text-muted">
         {hintFor(phase, game, practice)}
+        {game?.edition.credit && (
+          <span className="ml-1 text-gold">
+            · Prompt by u/{game.edition.credit}
+          </span>
+        )}
       </p>
     </header>
   );

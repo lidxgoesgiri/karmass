@@ -238,3 +238,6 @@ export const setFlairOff = async (id: string, off: boolean): Promise<void> => {
 export const unclaimDailyPost = async (date: string): Promise<void> => {
   await redis.hDel(key.dailyPosted, [date]);
 };
+
+export const isDailyPublished = async (date: string): Promise<boolean> =>
+  Boolean(await redis.hGet(key.dailyPosted, date));

@@ -9,6 +9,8 @@ const STICKY_TEXT = [
   'Finish today’s edition and tap **Share result** to post a spoiler-free summary as a reply to this comment.',
   '',
   'Please keep the winning words out of the thread until tomorrow’s edition drops.',
+  '',
+  '**Got a prompt idea?** Reply with a sentence that has two blanks (for example, *The two best smells are [A] and [B]*) plus six options. Community favorites join future editions with credit: *Prompt by u/you*.',
 ].join('\n');
 
 export const snoovatarFor = async (

@@ -8,14 +8,15 @@
     "build": "vite build",
     "dev": "devvit playtest",
     "deploy": "npm run check && devvit upload",
-    "check": "npm run test:types && npm run lint && npm run test:unit && npm run build && npm run size",
+    "check": "npm run test:types && npm run lint && npm run test:unit && npm run test:api && npm run build && npm run size",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "login": "devvit login",
     "prettier": "prettier --write .",
     "size": "node scripts/check-bundle-size.mjs",
     "test:types": "tsc --build",
     "test:unit": "node --experimental-strip-types --no-warnings=ExperimentalWarning --test \"src/**/*.test.ts\"",
-    "preview": "node scripts/mock-preview.mjs"
+    "preview": "node scripts/mock-preview.mjs",
+    "test:api": "vitest run"
   },
   "engines": {
     "node": ">=24.0.0"
@@ -51,6 +52,7 @@
     "tailwindcss": "4.3.5",
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.2",
-    "vite": "8.3.8"
+    "vite": "8.3.8",
+    "vitest": "5.1.2"
   }
 }

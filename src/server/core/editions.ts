@@ -47,7 +47,14 @@ export const publicEdition = (n: number, date: string): PublicEdition => {
     const j = Math.floor(rand() * (i + 1));
     [options[i], options[j]] = [options[j]!, options[i]!];
   }
-  return { number: n, theme: ed.theme, prompt: ed.prompt, date, options };
+  return {
+    number: n,
+    theme: ed.theme,
+    prompt: ed.prompt,
+    date,
+    options,
+    ...(ed.credit && { credit: ed.credit }),
+  };
 };
 
 export const blankPrompt = (prompt: string): string =>
