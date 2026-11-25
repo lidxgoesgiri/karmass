@@ -69,7 +69,7 @@ const api = async (req, res, url, guest) => {
   if (route === 'practice') {
     const rows = [...released].map(([number, d]) => ({ number, date: d }));
     const pick = pickPractice(
-      practiceCandidates(rows, utcDate(Date.now()), PRACTICE_NUMBERS),
+      practiceCandidates(rows, Date.now(), PRACTICE_NUMBERS),
       Number(url.searchParams.get('exclude') ?? 0),
       Math.random
     );

@@ -145,11 +145,11 @@ test('practice pool: finished editions + practice bank, no immediate repeat', ()
   ];
   const bank = [1001, 1002];
   assert.deepEqual(
-    practiceCandidates(rows, '2026-12-03', bank),
+    practiceCandidates(rows, Date.parse('2026-12-03T12:00:00Z'), bank),
     [2, 1, 1001, 1002]
   );
   assert.deepEqual(
-    practiceCandidates([rows[0]!], '2026-12-03', bank),
+    practiceCandidates([rows[0]!], Date.parse('2026-12-03T12:00:00Z'), bank),
     bank,
     'day one: bank only'
   );
@@ -167,4 +167,15 @@ test('live grace: only the first hours after UTC midnight, only for yesterday', 
   assert.equal(inLiveGrace('2026-12-01', at('2026-12-02T02:30:00Z')), false);
   assert.equal(inLiveGrace('2026-11-30', at('2026-12-02T01:00:00Z')), false);
   assert.equal(inLiveGrace('2026-12-02', at('2026-12-02T01:00:00Z')), false);
+});
+
+test('practice skips yesterday while its live grace window is open', () => {
+  const rows = [
+    { number: 2, date: '2026-12-02' },
+    { number: 1, date: '2026-12-01' },
+  ];
+  const inGrace = Date.parse('2026-12-03T00:30:00Z');
+  const afterGrace = Date.parse('2026-12-03T03:00:00Z');
+  assert.deepEqual(practiceCandidates(rows, inGrace, []), [1]);
+  assert.deepEqual(practiceCandidates(rows, afterGrace, []), [2, 1]);
 });

@@ -2,8 +2,3 @@ node_modules
 dist
 .env
 .DS_Store
-
-# Local-only: agent instructions and tool config
-CLAUDE.md
-AGENTS.md
-.claude/

@@ -136,14 +136,17 @@ export const shareText = (
 };
 
 // Practice candidates: finished daily editions plus the practice-only bank (never today's or
-// future daily prompts). Avoids repeating the edition currently on screen.
+// future daily prompts). Yesterday's edition stays out while its live grace window is open,
+// otherwise a player finishing a grace run could read its final weights here.
 export const practiceCandidates = (
   released: { number: number; date: string }[],
-  today: string,
+  now: number,
   bankNumbers: number[]
 ): number[] => [
   ...released
-    .filter((r) => r.date !== '' && r.date < today)
+    .filter(
+      (r) => r.date !== '' && r.date < utcDate(now) && !inLiveGrace(r.date, now)
+    )
     .map((r) => r.number),
   ...bankNumbers,
 ];

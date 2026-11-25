@@ -342,9 +342,8 @@ api.post('/flair', async (c) => {
 // Unlimited practice: finished daily editions (final weights) + the practice-only bank (seed
 // weights). Both are safe to send to the client; nothing is stored.
 api.get('/practice', async (c) => {
-  const today = utcDate(Date.now());
   const n = pickPractice(
-    practiceCandidates(await listReleased(60), today, PRACTICE_NUMBERS),
+    practiceCandidates(await listReleased(60), Date.now(), PRACTICE_NUMBERS),
     Number(c.req.query('exclude') ?? 0),
     Math.random
   );

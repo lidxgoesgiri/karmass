@@ -9,7 +9,9 @@ const m = vi.hoisted(() => {
   const hash = (k: string) => hashes.get(k) ?? hashes.set(k, new Map()).get(k)!;
   const zset = (k: string) => zsets.get(k) ?? zsets.set(k, new Map()).get(k)!;
   const sorted = (k: string) =>
-    [...zset(k)].map(([member, score]) => ({ member, score })).sort((a, b) => a.score - b.score);
+    [...zset(k)]
+      .map(([member, score]) => ({ member, score }))
+      .sort((a, b) => a.score - b.score);
 
   const redis = {
     get: async (k: string) => strings.get(k),
@@ -18,7 +20,10 @@ const m = vi.hoisted(() => {
       strings.set(k, String(v));
       return v;
     },
-    del: async (...keys: string[]) => keys.forEach((k) => (strings.delete(k), hashes.delete(k), zsets.delete(k))),
+    del: async (...keys: string[]) =>
+      keys.forEach(
+        (k) => (strings.delete(k), hashes.delete(k), zsets.delete(k))
+      ),
     expire: async () => {},
     hGet: async (k: string, f: string) => hash(k).get(f),
     hGetAll: async (k: string) => Object.fromEntries(hash(k)),
@@ -26,25 +31,37 @@ const m = vi.hoisted(() => {
       Object.entries(values).forEach(([f, v]) => hash(k).set(f, v));
       return Object.keys(values).length;
     },
-    hSetNX: async (k: string, f: string, v: string) => (hash(k).has(f) ? 0 : (hash(k).set(f, v), 1)),
+    hSetNX: async (k: string, f: string, v: string) =>
+      hash(k).has(f) ? 0 : (hash(k).set(f, v), 1),
     hIncrBy: async (k: string, f: string, n: number) => {
       const v = Number(hash(k).get(f) ?? 0) + n;
       hash(k).set(f, String(v));
       return v;
     },
-    hDel: async (k: string, fields: string[]) => fields.filter((f) => hash(k).delete(f)).length,
-    hMGet: async (k: string, fields: string[]) => fields.map((f) => hash(k).get(f) ?? null),
-    zAdd: async (k: string, ...members: { member: string; score: number }[]) => {
+    hDel: async (k: string, fields: string[]) =>
+      fields.filter((f) => hash(k).delete(f)).length,
+    hMGet: async (k: string, fields: string[]) =>
+      fields.map((f) => hash(k).get(f) ?? null),
+    zAdd: async (
+      k: string,
+      ...members: { member: string; score: number }[]
+    ) => {
       members.forEach(({ member, score }) => zset(k).set(member, score));
       return members.length;
     },
-    zRem: async (k: string, members: string[]) => members.filter((x) => zset(k).delete(x)).length,
+    zRem: async (k: string, members: string[]) =>
+      members.filter((x) => zset(k).delete(x)).length,
     zCard: async (k: string) => zset(k).size,
     zRank: async (k: string, member: string) => {
       const i = sorted(k).findIndex((e) => e.member === member);
       return i < 0 ? undefined : i;
     },
-    zRange: async (k: string, start: number, stop: number, opts: { reverse?: boolean }) => {
+    zRange: async (
+      k: string,
+      start: number,
+      stop: number,
+      opts: { reverse?: boolean }
+    ) => {
       const list = opts?.reverse ? sorted(k).reverse() : sorted(k);
       return list.slice(start, stop < 0 ? undefined : stop + 1);
     },
@@ -53,14 +70,22 @@ const m = vi.hoisted(() => {
   const reddit = {
     comments: [] as { id: string; text: string; runAs?: string }[],
     flairs: [] as { username: string; text?: string }[],
-    submitComment: vi.fn(async (o: { id: string; text: string; runAs?: string }) => {
-      reddit.comments.push(o);
-      return { id: 't1_new', distinguish: async () => {} };
-    }),
-    setUserFlair: vi.fn(async (o: { username: string; text?: string }) => void reddit.flairs.push(o)),
+    submitComment: vi.fn(
+      async (o: { id: string; text: string; runAs?: string }) => {
+        reddit.comments.push(o);
+        return { id: 't1_new', distinguish: async () => {} };
+      }
+    ),
+    setUserFlair: vi.fn(
+      async (o: { username: string; text?: string }) =>
+        void reddit.flairs.push(o)
+    ),
     removeUserFlair: vi.fn(async () => {}),
     getSnoovatarUrl: vi.fn(async () => undefined),
-    submitCustomPost: vi.fn(async () => ({ id: 't3_new', permalink: '/r/Karmass/comments/new' })),
+    submitCustomPost: vi.fn(async () => ({
+      id: 't3_new',
+      permalink: '/r/Karmass/comments/new',
+    })),
   };
 
   const ctx: Record<string, unknown> = {};
@@ -82,10 +107,18 @@ const m = vi.hoisted(() => {
   return { redis, reddit, ctx, reset };
 });
 
-vi.mock('@devvit/web/server', () => ({ context: m.ctx, redis: m.redis, reddit: m.reddit }));
+vi.mock('@devvit/web/server', () => ({
+  context: m.ctx,
+  redis: m.redis,
+  reddit: m.reddit,
+}));
 
 import { api } from './api';
-import { attachPost, castVote, releaseEdition } from '../services/hivemindRedis';
+import {
+  attachPost,
+  castVote,
+  releaseEdition,
+} from '../services/hivemindRedis';
 import { DAY_MS, utcDate } from '../core/game';
 
 const call = async (method: 'GET' | 'POST', path: string, body?: unknown) => {
@@ -128,39 +161,68 @@ describe('state', () => {
 
 describe('vote and drop', () => {
   it('requires a vote before dropping, and counts each vote once', async () => {
-    expect((await call('POST', '/drop', { edition: 1, left: 'o3', right: 'o4' })).status).toBe(409);
-    expect((await call('POST', '/vote', { edition: 1, optionId: 'o1' })).status).toBe(200);
-    expect((await call('POST', '/vote', { edition: 1, optionId: 'o2' })).status).toBe(409);
+    expect(
+      (await call('POST', '/drop', { edition: 1, left: 'o3', right: 'o4' }))
+        .status
+    ).toBe(409);
+    expect(
+      (await call('POST', '/vote', { edition: 1, optionId: 'o1' })).status
+    ).toBe(200);
+    expect(
+      (await call('POST', '/vote', { edition: 1, optionId: 'o2' })).status
+    ).toBe(409);
     expect((await call('GET', '/state')).json.voters).toBe(1);
   });
 
   it('rejects identical or unknown blocks', async () => {
     await call('POST', '/vote', { edition: 1, optionId: 'o1' });
-    expect((await call('POST', '/drop', { edition: 1, left: 'o3', right: 'o3' })).status).toBe(409);
-    expect((await call('POST', '/drop', { edition: 1, left: 'o3', right: 'zz' })).status).toBe(409);
+    expect(
+      (await call('POST', '/drop', { edition: 1, left: 'o3', right: 'o3' }))
+        .status
+    ).toBe(409);
+    expect(
+      (await call('POST', '/drop', { edition: 1, left: 'o3', right: 'zz' }))
+        .status
+    ).toBe(409);
   });
 
   it('a balanced drop finishes the run, ranks the player and sets flair', async () => {
     await call('POST', '/vote', { edition: 1, optionId: 'o1' });
-    const { status, json } = await call('POST', '/drop', { edition: 1, left: 'o3', right: 'o4' });
+    const { status, json } = await call('POST', '/drop', {
+      edition: 1,
+      left: 'o3',
+      right: 'o4',
+    });
     expect(status).toBe(200);
     expect(json.attempt.balanced).toBe(true);
     expect(json.session.final.won).toBe(true);
     expect(json.player.streak).toBe(1);
     const lb = (await call('GET', '/leaderboard?edition=1')).json;
     expect(lb.entries[0].username).toBe('alice');
-    expect(m.reddit.flairs.at(-1)).toMatchObject({ username: 'alice', text: 'Balanced Rookie' });
-    expect((await call('POST', '/drop', { edition: 1, left: 'o1', right: 'o2' })).status).toBe(409);
+    expect(m.reddit.flairs.at(-1)).toMatchObject({
+      username: 'alice',
+      text: 'Balanced Rookie',
+    });
+    expect(
+      (await call('POST', '/drop', { edition: 1, left: 'o1', right: 'o2' }))
+        .status
+    ).toBe(409);
   });
 
   it('three tipped drops end in a ratio with no fourth attempt', async () => {
     await call('POST', '/vote', { edition: 1, optionId: 'o1' });
     for (let i = 0; i < 3; i++)
-      expect((await call('POST', '/drop', { edition: 1, left: 'o1', right: 'o6' })).status).toBe(200);
+      expect(
+        (await call('POST', '/drop', { edition: 1, left: 'o1', right: 'o6' }))
+          .status
+      ).toBe(200);
     const s = (await call('GET', '/state')).json.session;
     expect(s.final.won).toBe(false);
     expect(Object.keys(s.final.percents)).toHaveLength(6);
-    expect((await call('POST', '/drop', { edition: 1, left: 'o1', right: 'o6' })).status).toBe(409);
+    expect(
+      (await call('POST', '/drop', { edition: 1, left: 'o1', right: 'o6' }))
+        .status
+    ).toBe(409);
     expect((await call('GET', '/leaderboard?edition=1')).json.total).toBe(0);
   });
 });
@@ -171,8 +233,13 @@ describe('share', () => {
     await call('POST', '/vote', { edition: 1, optionId: 'o1' });
     await call('POST', '/drop', { edition: 1, left: 'o3', right: 'o4' });
     expect((await call('POST', '/share', { edition: 1 })).status).toBe(200);
-    expect(m.reddit.comments.at(-1)).toMatchObject({ id: 't1_sticky', runAs: 'USER' });
-    expect(m.reddit.comments.at(-1)?.text).not.toMatch(/Typing fake notes|Refreshing empty inbox/);
+    expect(m.reddit.comments.at(-1)).toMatchObject({
+      id: 't1_sticky',
+      runAs: 'USER',
+    });
+    expect(m.reddit.comments.at(-1)?.text).not.toMatch(
+      /Typing fake notes|Refreshing empty inbox/
+    );
     expect((await call('POST', '/share', { edition: 1 })).status).toBe(409);
   });
 });
@@ -182,8 +249,13 @@ describe('archive, grace and guests', () => {
     await releaseEdition(2, utcDate(NOW - 3 * DAY_MS));
     const { json } = await call('GET', '/state?edition=2');
     expect(json.mode).toBe('archive');
-    expect((await call('POST', '/vote', { edition: 2, optionId: 'o1' })).status).toBe(409);
-    expect((await call('POST', '/drop', { edition: 2, left: 'o1', right: 'o2' })).status).toBe(200);
+    expect(
+      (await call('POST', '/vote', { edition: 2, optionId: 'o1' })).status
+    ).toBe(409);
+    expect(
+      (await call('POST', '/drop', { edition: 2, left: 'o1', right: 'o2' }))
+        .status
+    ).toBe(200);
   });
 
   it('a run started yesterday stays live shortly after midnight', async () => {
@@ -201,8 +273,13 @@ describe('archive, grace and guests', () => {
     m.ctx.userId = undefined;
     m.ctx.username = undefined;
     m.ctx.loid = 'guest-1';
-    expect((await call('POST', '/vote', { edition: 1, optionId: 'o1' })).status).toBe(401);
-    expect((await call('POST', '/drop', { edition: 1, left: 'o3', right: 'o4' })).status).toBe(200);
+    expect(
+      (await call('POST', '/vote', { edition: 1, optionId: 'o1' })).status
+    ).toBe(401);
+    expect(
+      (await call('POST', '/drop', { edition: 1, left: 'o3', right: 'o4' }))
+        .status
+    ).toBe(200);
     expect((await call('GET', '/leaderboard?edition=1')).json.total).toBe(0);
   });
 });
