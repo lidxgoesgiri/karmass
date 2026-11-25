@@ -6,10 +6,18 @@
     "entrypoints": {
       "default": {
         "entry": "splash.html",
-        "height": "tall"
+        "height": "tall",
+        "styles": {
+          "backgroundColor": "#09090BFF",
+          "backgroundColorDark": "#09090BFF"
+        }
       },
       "game": {
-        "entry": "game.html"
+        "entry": "game.html",
+        "styles": {
+          "backgroundColor": "#09090BFF",
+          "backgroundColorDark": "#09090BFF"
+        }
       }
     }
   },

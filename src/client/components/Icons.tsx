@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 // Original inline SVG icons (no icon-font or Reddit glyph dependencies).
 
 export const BalanceCoreIcon = ({ size = 28 }: { size?: number }) => (
@@ -43,10 +45,10 @@ export const SoundIcon = ({ muted }: { muted: boolean }) => (
   </svg>
 );
 
-export const CloseIcon = () => (
+export const CloseIcon = ({ size = 18 }: { size?: number }) => (
   <svg
-    width="18"
-    height="18"
+    width={size}
+    height={size}
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -63,16 +65,18 @@ export const Avatar = ({
 }: {
   src: string | null;
   size?: number;
-}) =>
-  src ? (
+}) => {
+  const [broken, setBroken] = useState(false);
+  if (!src || broken) return <BalanceCoreIcon size={size} />;
+  return (
     <img
       src={src}
       alt=""
       width={size}
       height={size}
+      onError={() => setBroken(true)}
       className="shrink-0 object-contain"
       style={{ width: size, height: size }}
     />
-  ) : (
-    <BalanceCoreIcon size={size} />
   );
+};

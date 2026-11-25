@@ -32,6 +32,12 @@
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
+/* Dark-only UI: tell the browser so scrollbars, focus rings and form controls stay dark
+   even when Reddit or the OS is in light mode. */
+:root {
+  color-scheme: dark;
+}
+
 html,
 body,
 #root {
@@ -130,4 +136,10 @@ body,
   .sway {
     animation: none;
   }
+}
+
+/* Thin dark scrollbars for the results card on desktop. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f46 transparent;
 }

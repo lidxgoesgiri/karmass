@@ -116,4 +116,11 @@ export type SplashData = {
   username: string | null;
 };
 
+// Practice rounds use past editions only; their final weights are public, so the client
+// evaluates drops locally and nothing is stored.
+export type PracticeRound = {
+  edition: PublicEdition;
+  percents: Record<string, number>;
+};
+
 export type ApiError = { error: string };

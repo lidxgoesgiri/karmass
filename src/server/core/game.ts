@@ -4,10 +4,8 @@ import {
   MAX_ATTEMPTS,
   TIER_LABEL,
   blendPercents,
-  isBalanced,
   score,
   tier,
-  weightDelta,
 } from '../../shared/physics.ts';
 
 export const DAY_MS = 86_400_000;
@@ -53,16 +51,7 @@ export const validateDrop = (
   return null;
 };
 
-export const evaluateDrop = (
-  percents: Record<string, number>,
-  left: string,
-  right: string
-): Attempt => {
-  const leftPct = percents[left] ?? 0;
-  const rightPct = percents[right] ?? 0;
-  const delta = weightDelta(leftPct, rightPct);
-  return { left, right, leftPct, rightPct, delta, balanced: isBalanced(delta) };
-};
+export { evaluateDrop } from '../../shared/physics.ts';
 
 export const finalize = (
   attempt: Attempt,
@@ -138,4 +127,17 @@ export const shareText = (
     '',
     '*Think you can read today’s Hivemind?*',
   ].join('\n');
+};
+
+// Practice draws from editions whose live day is over (never today's or future prompts),
+// avoiding an immediate repeat when there is more than one to choose from.
+export const pickPractice = <T extends { number: number; date: string }>(
+  released: T[],
+  today: string,
+  exclude: number,
+  rand: () => number
+): T | null => {
+  const past = released.filter((r) => r.date !== '' && r.date < today);
+  const pool = past.length > 1 ? past.filter((r) => r.number !== exclude) : past;
+  return pool[Math.floor(rand() * pool.length)] ?? null;
 };

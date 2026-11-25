@@ -1,3 +1,5 @@
+import type { Attempt } from './types';
+
 // Single source of truth for balance rules, shared by server verdicts and client visuals.
 // Tuned per audit (2026-11-25): PRD's Δ≤8 let ~56% of random pairs win on the first try; Δ≤4 → ~31%.
 
@@ -51,4 +53,16 @@ export const blendPercents = (
   const totals = seedVotes.map((seed, i) => seed + (liveVotes[i] ?? 0));
   const sum = totals.reduce((a, b) => a + b, 0);
   return totals.map((t) => (sum === 0 ? 0 : Math.round((t / sum) * 100)));
+};
+
+// One drop verdict, used by the server for daily/archive play and by the client for practice.
+export const evaluateDrop = (
+  percents: Record<string, number>,
+  left: string,
+  right: string
+): Attempt => {
+  const leftPct = percents[left] ?? 0;
+  const rightPct = percents[right] ?? 0;
+  const delta = weightDelta(leftPct, rightPct);
+  return { left, right, leftPct, rightPct, delta, balanced: isBalanced(delta) };
 };

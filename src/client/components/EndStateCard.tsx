@@ -16,6 +16,7 @@ type Tab = 'results' | 'leaderboard' | 'archive';
 type Props = {
   game: GameState;
   onClose: () => void;
+  onPractice: () => void;
   onPlayEdition: (n: number) => void;
   onShared: () => void;
   onPlayer: (p: Player) => void;
@@ -24,6 +25,7 @@ type Props = {
 export const EndStateCard = ({
   game,
   onClose,
+  onPractice,
   onPlayEdition,
   onShared,
   onPlayer,
@@ -109,7 +111,12 @@ export const EndStateCard = ({
 
         <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
           {tab === 'results' && (
-            <Results game={game} onShared={onShared} onPlayer={onPlayer} />
+            <Results
+              game={game}
+              onShared={onShared}
+              onPlayer={onPlayer}
+              onPractice={onPractice}
+            />
           )}
           {tab === 'leaderboard' && (
             <Leaderboard edition={game.edition.number} />
@@ -127,7 +134,8 @@ const Results = ({
   game,
   onShared,
   onPlayer,
-}: Pick<Props, 'game' | 'onShared' | 'onPlayer'>) => {
+  onPractice,
+}: Pick<Props, 'game' | 'onShared' | 'onPlayer' | 'onPractice'>) => {
   const { session, player, edition, mode } = game;
   const final = session.final;
   const now = useNow(1000);
@@ -270,6 +278,12 @@ const Results = ({
       <p className="text-center text-[10.5px] text-muted">
         Posts a spoiler-free reply to the pinned comment. Never automatic.
       </p>
+      <button
+        className="min-h-12 w-full rounded-full border border-gold/50 font-bold tracking-wide text-gold transition active:scale-[0.97]"
+        onClick={onPractice}
+      >
+        PRACTICE · UNLIMITED ROUNDS
+      </button>
     </div>
   );
 };

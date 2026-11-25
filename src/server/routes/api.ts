@@ -8,6 +8,7 @@ import type {
   FlairRequest,
   GameState,
   LeaderboardResponse,
+  PracticeRound,
   Mode,
   Player,
   Session,
@@ -25,6 +26,7 @@ import {
   isOption,
   nextStreak,
   nextUtcMidnight,
+  pickPractice,
   shareText,
   utcDate,
   validateDrop,
@@ -320,4 +322,19 @@ api.post('/flair', async (c) => {
   if (!body.enabled) await clearFlair(context.username);
   else if (player.flair) await applyFlair(context.username, player.flair);
   return c.json<Player>(player);
+});
+
+// Unlimited practice on finished editions: final weights are public, nothing is stored.
+api.get('/practice', async (c) => {
+  const pick = pickPractice(
+    await listReleased(60),
+    utcDate(Date.now()),
+    Number(c.req.query('exclude') ?? 0),
+    Math.random
+  );
+  if (!pick) return fail(c, 'Practice unlocks once the first daily edition has ended.', 404);
+  return c.json<PracticeRound>({
+    edition: publicEdition(pick.number, pick.date),
+    percents: currentPercents(editionFor(pick.number), await getVotes(pick.number)),
+  });
 });

@@ -16,6 +16,7 @@ import {
   flairText,
   isOption,
   nextUtcMidnight,
+  pickPractice,
   utcDate,
   validateDrop,
   DAY_MS,
@@ -63,6 +64,12 @@ const api = async (req, res, url, guest) => {
     flairEnabled: player.flairEnabled,
     flair: !guest && player.flairEnabled ? flairText(player.streak) : null,
   };
+  if (route === 'practice') {
+    const rows = [...released].map(([number, d]) => ({ number, date: d }));
+    const pick = pickPractice(rows, utcDate(Date.now()), Number(url.searchParams.get('exclude') ?? 0), Math.random);
+    if (!pick) return json(res, 404, { error: 'Practice unlocks once the first daily edition has ended.' });
+    return json(res, 200, { edition: publicEdition(pick.number, pick.date), percents: currentPercents(editionFor(pick.number), votes.get(pick.number) ?? {}) });
+  }
   if (route === 'archive')
     return json(
       res,
