@@ -1,0 +1,32 @@
+<!-- KARMASS emblem: original geometry (fulcrum, beam, word blocks, Balance Core, equilibrium star). No Reddit marks. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="45%" r="70%">
+      <stop offset="0" stop-color="#17171c"/>
+      <stop offset="1" stop-color="#09090b"/>
+    </radialGradient>
+    <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse">
+      <circle cx="8" cy="8" r="1.1" fill="#26262c"/>
+    </pattern>
+    <filter id="glow" filterUnits="userSpaceOnUse" x="0" y="0" width="256" height="256">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="256" height="256" fill="url(#bg)"/>
+  <rect width="256" height="256" fill="url(#dots)"/>
+  <!-- equilibrium star -->
+  <path d="M128 36 l6 13 13 6 -13 6 -6 13 -6 -13 -13 -6 13 -6z" fill="#ffb800" filter="url(#glow)"/>
+  <!-- mast + Balance Core -->
+  <line x1="128" y1="142" x2="128" y2="110" stroke="#a1a1aa" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="128" cy="96" r="25" fill="none" stroke="#00f5a0" stroke-opacity="0.35" stroke-width="2.5"/>
+  <path d="M128 78 l18 18 -18 18 -18 -18z" fill="#141418" stroke="#fafafa" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="128" cy="96" r="6" fill="#00f5a0" filter="url(#glow)"/>
+  <!-- word blocks -->
+  <rect x="44" y="114" width="62" height="26" rx="8" fill="#141418" stroke="#ff4500" stroke-width="3.5"/>
+  <rect x="150" y="114" width="62" height="26" rx="8" fill="#141418" stroke="#7193ff" stroke-width="3.5"/>
+  <!-- balanced beam -->
+  <rect x="34" y="142" width="188" height="11" rx="5.5" fill="#00f5a0" filter="url(#glow)"/>
+  <!-- fulcrum -->
+  <path d="M128 155 L162 204 L94 204 Z" fill="#1c1c21" stroke="#3f3f46" stroke-width="3" stroke-linejoin="round"/>
+</svg>

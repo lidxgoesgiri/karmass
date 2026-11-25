@@ -1,0 +1,234 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face {
+        font-family: 'JetBrains Mono';
+        src: url('../../node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2')
+          format('woff2-variations');
+        font-weight: 100 800;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 384px;
+        overflow: hidden;
+        background: #09090b;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Banner 1920x384. Reddit crops it to a thin strip, so everything important sits in the
+         centre band (y 128-256); the outer area is atmosphere only. -->
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1920"
+      height="384"
+      viewBox="0 0 1920 384"
+    >
+      <defs>
+        <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+          <circle cx="12" cy="12" r="1.4" fill="#222228" />
+        </pattern>
+        <linearGradient id="beam" x1="0" x2="1">
+          <stop offset="0" stop-color="#00f5a0" stop-opacity="0" />
+          <stop offset="0.5" stop-color="#00f5a0" stop-opacity="0.55" />
+          <stop offset="1" stop-color="#00f5a0" stop-opacity="0" />
+        </linearGradient>
+        <radialGradient id="warm" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#ff4500" stop-opacity="0.18" />
+          <stop offset="1" stop-color="#ff4500" stop-opacity="0" />
+        </radialGradient>
+        <radialGradient id="cool" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#7193ff" stop-opacity="0.18" />
+          <stop offset="1" stop-color="#7193ff" stop-opacity="0" />
+        </radialGradient>
+        <filter
+          id="glow"
+          filterUnits="userSpaceOnUse"
+          x="-2000"
+          y="-400"
+          width="4000"
+          height="800"
+        >
+          <feGaussianBlur stdDeviation="6" result="b" />
+          <feMerge>
+            <feMergeNode in="b" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      <rect width="1920" height="384" fill="#09090b" />
+      <rect width="1920" height="384" fill="url(#dots)" />
+      <ellipse cx="430" cy="192" rx="420" ry="190" fill="url(#warm)" />
+      <ellipse cx="1490" cy="192" rx="420" ry="190" fill="url(#cool)" />
+      <rect x="0" y="268" width="1920" height="2" fill="url(#beam)" />
+
+      <!-- left: tipped seesaw (unequal weights) -->
+      <g transform="translate(470 192) rotate(-5)">
+        <rect
+          x="-130"
+          y="-34"
+          width="110"
+          height="40"
+          rx="10"
+          fill="#141418"
+          stroke="#ff4500"
+          stroke-width="3"
+        />
+        <text
+          x="-75"
+          y="-7"
+          fill="#ff4500"
+          font-family="JetBrains Mono"
+          font-weight="700"
+          font-size="20"
+          text-anchor="middle"
+        >
+          25%
+        </text>
+        <rect
+          x="20"
+          y="-34"
+          width="110"
+          height="40"
+          rx="10"
+          fill="#141418"
+          stroke="#7193ff"
+          stroke-width="3"
+        />
+        <text
+          x="75"
+          y="-7"
+          fill="#7193ff"
+          font-family="JetBrains Mono"
+          font-weight="700"
+          font-size="20"
+          text-anchor="middle"
+        >
+          11%
+        </text>
+        <rect x="-150" y="8" width="300" height="9" rx="4.5" fill="#3f3f46" />
+      </g>
+      <path
+        d="M470 208 L496 244 L444 244 Z"
+        fill="#1c1c21"
+        stroke="#3f3f46"
+        stroke-width="2.5"
+        stroke-linejoin="round"
+      />
+
+      <!-- centre: wordmark -->
+      <text
+        x="960"
+        y="214"
+        fill="#fafafa"
+        font-family="JetBrains Mono"
+        font-weight="800"
+        font-size="104"
+        letter-spacing="14"
+        text-anchor="middle"
+      >
+        KARMASS
+      </text>
+      <text
+        x="960"
+        y="252"
+        fill="#a1a1aa"
+        font-family="JetBrains Mono"
+        font-weight="600"
+        font-size="20"
+        letter-spacing="8"
+        text-anchor="middle"
+      >
+        WEIGH THE HIVEMIND
+      </text>
+
+      <!-- right: balanced seesaw with Balance Core and equilibrium star -->
+      <g transform="translate(1450 192)">
+        <path
+          d="M0 -70 l5 11 11 5 -11 5 -5 11 -5 -11 -11 -5 11 -5z"
+          fill="#ffb800"
+          filter="url(#glow)"
+        />
+        <line
+          x1="0"
+          y1="10"
+          x2="0"
+          y2="-20"
+          stroke="#a1a1aa"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        />
+        <path
+          d="M0 -40 l15 15 -15 15 -15 -15z"
+          fill="#141418"
+          stroke="#fafafa"
+          stroke-width="3"
+          stroke-linejoin="round"
+        />
+        <circle cx="0" cy="-25" r="5" fill="#00f5a0" filter="url(#glow)" />
+        <rect
+          x="-130"
+          y="-30"
+          width="110"
+          height="40"
+          rx="10"
+          fill="#141418"
+          stroke="#00f5a0"
+          stroke-width="3"
+        />
+        <text
+          x="-75"
+          y="-3"
+          fill="#00f5a0"
+          font-family="JetBrains Mono"
+          font-weight="700"
+          font-size="20"
+          text-anchor="middle"
+        >
+          19%
+        </text>
+        <rect
+          x="20"
+          y="-30"
+          width="110"
+          height="40"
+          rx="10"
+          fill="#141418"
+          stroke="#00f5a0"
+          stroke-width="3"
+        />
+        <text
+          x="75"
+          y="-3"
+          fill="#00f5a0"
+          font-family="JetBrains Mono"
+          font-weight="700"
+          font-size="20"
+          text-anchor="middle"
+        >
+          17%
+        </text>
+        <rect
+          x="-150"
+          y="12"
+          width="300"
+          height="9"
+          rx="4.5"
+          fill="#00f5a0"
+          filter="url(#glow)"
+        />
+        <path
+          d="M0 22 L26 52 L-26 52 Z"
+          fill="#1c1c21"
+          stroke="#3f3f46"
+          stroke-width="2.5"
+          stroke-linejoin="round"
+        />
+      </g>
+    </svg>
+  </body>
+</html>
