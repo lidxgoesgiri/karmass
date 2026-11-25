@@ -1,0 +1,133 @@
+@import 'tailwindcss';
+
+/* Self-hosted OFL fonts, latin subset only (no external CDN inside the Reddit WebView). */
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2')
+    format('woff2-variations');
+  font-weight: 300 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2')
+    format('woff2-variations');
+  font-weight: 100 800;
+  font-display: swap;
+}
+
+/* Cyber-Reddit tokens (Blueprint §3). Dark only: no light-mode fallback by design. */
+@theme {
+  --color-void: #09090b;
+  --color-grid: #18181b;
+  --color-block: #141418;
+  --color-line: #27272a;
+  --color-heavy: #ff4500;
+  --color-light: #7193ff;
+  --color-win: #00f5a0;
+  --color-gold: #ffb800;
+  --color-ink: #fafafa;
+  --color-muted: #a1a1aa;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  background: var(--color-void);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---- Motion primitives (original implementations) ---- */
+
+@property --beam-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* Border beam framing the end-state card. */
+.beam {
+  position: relative;
+}
+.beam::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 0 68%,
+    var(--color-win) 80%,
+    var(--color-gold) 88%,
+    transparent 96%
+  );
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: beam-spin 4s linear infinite;
+  pointer-events: none;
+}
+@keyframes beam-spin {
+  to {
+    --beam-angle: 360deg;
+  }
+}
+
+.slot-pulse {
+  animation: slot-pulse 1.6s ease-in-out infinite;
+}
+@keyframes slot-pulse {
+  50% {
+    border-color: var(--color-win);
+    color: var(--color-ink);
+  }
+}
+
+.drop-ready {
+  animation: drop-ready 1.2s ease-in-out infinite;
+}
+@keyframes drop-ready {
+  50% {
+    box-shadow:
+      0 0 0 6px rgb(255 69 0 / 0.18),
+      0 0 24px rgb(255 69 0 / 0.45);
+  }
+}
+
+/* Splash: original seesaw emblem swaying (CSS only, keeps the inline view light). */
+.sway {
+  transform-origin: 50% 100%;
+  animation: sway 3.2s ease-in-out infinite;
+}
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+
+.dot-grid {
+  background-image: radial-gradient(circle, #1f1f24 1px, transparent 1.2px);
+  background-size: 22px 22px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beam::before,
+  .slot-pulse,
+  .drop-ready,
+  .sway {
+    animation: none;
+  }
+}
