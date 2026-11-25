@@ -29,7 +29,7 @@ export const Splash = () => {
     <main className="dot-grid flex h-full flex-col items-center justify-center gap-3 overflow-hidden px-5 text-center">
       <p className="flex items-center gap-1.5 rounded-full border border-line bg-void/80 px-3 py-1 font-mono text-[10.5px] tracking-[0.14em] text-muted">
         <span
-          className={`size-1.5 rounded-full ${data?.mode === 'archive' ? 'bg-muted' : 'bg-win shadow-[0_0_8px_#00F5A0]'}`}
+          className={`size-1.5 rounded-full ${data?.mode === 'archive' ? 'bg-muted' : 'bg-win shadow-[0_0_8px_var(--color-win)]'}`}
         />
         {data ? (
           <>
@@ -61,7 +61,7 @@ export const Splash = () => {
       </p>
 
       <button
-        className="drop-ready min-h-12 rounded-full bg-heavy px-7 font-bold tracking-wide text-void transition active:scale-[0.97]"
+        className="drop-ready min-h-12 rounded-full bg-heavy px-7 font-bold tracking-wide text-on-accent transition active:scale-[0.97]"
         onClick={(e) => requestExpandedMode(e.nativeEvent, 'game')}
       >
         {cta}
@@ -89,7 +89,10 @@ const Seesaw = () => (
     aria-hidden="true"
     className="max-w-[70vw]"
   >
-    <path d="M110 18 l3 6 6 3 -6 3 -3 6 -3 -6 -6 -3 6 -3z" fill="#FFB800" />
+    <path
+      d="M110 18 l3 6 6 3 -6 3 -3 6 -3 -6 -6 -3 6 -3z"
+      className="fill-gold"
+    />
     <g className="sway">
       <rect
         x="40"
@@ -97,9 +100,8 @@ const Seesaw = () => (
         width="44"
         height="18"
         rx="5"
-        fill="#141418"
-        stroke="#FF4500"
         strokeWidth="1.5"
+        className="fill-block stroke-heavy"
       />
       <rect
         x="136"
@@ -107,32 +109,36 @@ const Seesaw = () => (
         width="44"
         height="18"
         rx="5"
-        fill="#141418"
-        stroke="#7193FF"
         strokeWidth="1.5"
+        className="fill-block stroke-light"
       />
       <line
         x1="110"
         y1="66"
         x2="110"
         y2="44"
-        stroke="#A1A1AA"
         strokeWidth="1.5"
+        className="stroke-muted"
       />
       <path
         d="M110 36 l7 7 -7 7 -7 -7z"
-        fill="#141418"
-        stroke="#FAFAFA"
         strokeWidth="1.5"
+        className="fill-block stroke-ink"
       />
-      <circle cx="110" cy="43" r="2.2" fill="#00F5A0" />
-      <rect x="26" y="64" width="168" height="6" rx="3" fill="#3F3F46" />
+      <circle cx="110" cy="43" r="2.2" className="fill-win" />
+      <rect
+        x="26"
+        y="64"
+        width="168"
+        height="6"
+        rx="3"
+        className="fill-steel"
+      />
     </g>
     <path
       d="M110 70 L126 90 L94 90 Z"
-      fill="#1C1C21"
-      stroke="#27272A"
       strokeWidth="1.5"
+      className="fill-fulcrum stroke-line"
     />
   </svg>
 );

@@ -111,7 +111,7 @@ export const PromptHeader = ({
           {Array.from({ length: MAX_ATTEMPTS }, (_, i) => (
             <span
               key={i}
-              className={`size-2 rounded-full ${i < MAX_ATTEMPTS - used ? 'bg-win shadow-[0_0_8px_#00F5A0]' : 'bg-line'}`}
+              className={`size-2 rounded-full ${i < MAX_ATTEMPTS - used ? 'bg-win shadow-[0_0_8px_var(--color-win)]' : 'bg-line'}`}
             />
           ))}
         </span>

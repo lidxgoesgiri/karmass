@@ -5,18 +5,18 @@ import { sound } from './SoundSynth';
 export type BlockLook =
   'idle' | 'hover' | 'vote' | 'heavy' | 'light' | 'balance' | 'dim';
 
-const STROKE: Record<
-  BlockLook,
-  { color: number; alpha: number; width: number }
-> = {
-  idle: { color: C.line, alpha: 1, width: 1.5 },
-  hover: { color: C.ink, alpha: 0.5, width: 1.5 },
-  vote: { color: C.gold, alpha: 1, width: 2.5 },
-  heavy: { color: C.heavy, alpha: 1, width: 2.5 },
-  light: { color: C.light, alpha: 1, width: 2.5 },
-  balance: { color: C.balance, alpha: 1, width: 2.5 },
-  dim: { color: C.line, alpha: 0.6, width: 1 },
-};
+const stroke = (
+  look: BlockLook
+): { color: number; alpha: number; width: number } =>
+  ({
+    idle: { color: C.line, alpha: 1, width: 1.5 },
+    hover: { color: C.ink, alpha: 0.5, width: 1.5 },
+    vote: { color: C.gold, alpha: 1, width: 2.5 },
+    heavy: { color: C.heavy, alpha: 1, width: 2.5 },
+    light: { color: C.light, alpha: 1, width: 2.5 },
+    balance: { color: C.balance, alpha: 1, width: 2.5 },
+    dim: { color: C.line, alpha: 0.6, width: 1 },
+  })[look];
 
 const CIPHER = '0123456789#%$@';
 
@@ -117,6 +117,11 @@ export class BlockSprite extends Container {
     }, 45);
   }
 
+  retheme(): void {
+    this.caption.style.fill = C.ink;
+    this.redraw();
+  }
+
   override destroy(): void {
     if (this.cipherTimer) clearInterval(this.cipherTimer);
     super.destroy({ children: true });
@@ -124,7 +129,7 @@ export class BlockSprite extends Container {
 
   private redraw(): void {
     const { w, h } = this;
-    const s = STROKE[this.look];
+    const s = stroke(this.look);
     this.bg
       .clear()
       .roundRect(-w / 2, -h / 2, w, h, 10)

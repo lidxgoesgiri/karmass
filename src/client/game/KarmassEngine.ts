@@ -21,7 +21,7 @@ import { BlockSprite } from './BlockSprite';
 import { FxController } from './FxController';
 import { PhysicsWorld, computeLayout, type Layout } from './PhysicsWorld';
 import { sound } from './SoundSynth';
-import { C, FONT_MONO, loadFonts } from './theme';
+import { C, FONT_MONO, isLight, loadFonts, onThemeChange } from './theme';
 
 export type EngineMode = 'vote' | 'weigh' | 'locked';
 export type EngineHooks = {
@@ -109,7 +109,8 @@ export class KarmassEngine {
   private finishDrop: (() => void) | null = null;
   private clock = 0;
   private acc = 0;
-  private plankTint: number = C.steel;
+  private plankBalanced = false;
+  private unsubTheme: (() => void) | null = null;
   private destroyed = false;
   private resizeObs: ResizeObserver | null = null;
 
@@ -172,12 +173,15 @@ export class KarmassEngine {
     this.app.stage.on('pointerupoutside', (e) => this.onUp(e));
     this.app.renderer.on('resize', () => this.relayout());
     this.relayout();
+    this.fx.setBloom(!isLight());
+    this.unsubTheme = onThemeChange(() => this.retheme());
     this.app.ticker.add((ticker) => this.tick(ticker.deltaMS));
   }
 
   destroy(): void {
     this.destroyed = true;
     this.resizeObs?.disconnect();
+    this.unsubTheme?.();
     this.fx?.destroy();
     this.physics?.destroy();
     this.slots.forEach((s) => s.sprite.destroy());
@@ -271,7 +275,7 @@ export class KarmassEngine {
     });
     this.run = null;
     this.phase = 'idle';
-    this.plankTint = C.steel;
+    this.plankBalanced = false;
     this.restoreCore();
     this.relayout(true);
     this.emitSlots();
@@ -410,6 +414,17 @@ export class KarmassEngine {
     this.physics = new PhysicsWorld(L, (b) => this.onImpact(b));
     this.plankView.position.set(L.pivot.x, L.pivot.y);
 
+    this.drawStatic();
+    this.restoreCore();
+
+    this.slots.forEach((s) => s.sprite.setBox(L.blockW, L.blockH));
+    this.retarget(snap);
+    this.drawPads();
+  }
+
+  // Everything drawn from the live palette; called on layout and on theme change.
+  private drawStatic(): void {
+    const L = this.L;
     this.bg.clear();
     for (let x = 11; x < L.W; x += 22)
       for (let y = 11; y < L.H; y += 22) this.bg.circle(x, y, 1);
@@ -418,7 +433,7 @@ export class KarmassEngine {
     this.dockPanel
       .clear()
       .roundRect(L.dockX0 - 6, L.dockTop + 4, L.dockW + 12, L.dockH - 10, 16)
-      .fill({ color: 0x0e0e12, alpha: 0.92 })
+      .fill({ color: C.panel, alpha: 0.92 })
       .stroke({ width: 1, color: C.line, alpha: 0.8 });
 
     this.drawGauge();
@@ -433,7 +448,7 @@ export class KarmassEngine {
         L.pivot.x - base * 0.75,
         L.pivot.y + base,
       ])
-      .fill({ color: 0x1c1c21 })
+      .fill({ color: C.fulcrum })
       .stroke({ width: 1.5, color: C.line })
       .moveTo(L.W * 0.08, L.pivot.y + base + 1)
       .lineTo(L.W * 0.92, L.pivot.y + base + 1)
@@ -441,11 +456,18 @@ export class KarmassEngine {
     drawStar(this.star, 11);
     this.star.position.set(L.pivot.x, L.starY);
     this.drawPlank();
-    this.restoreCore();
-
-    this.slots.forEach((s) => s.sprite.setBox(L.blockW, L.blockH));
-    this.retarget(snap);
     this.drawPads();
+  }
+
+  // Reddit's light/dark toggle reaches the webview as prefers-color-scheme.
+  private retheme(): void {
+    if (this.destroyed || !this.app.renderer) return;
+    this.app.renderer.background.color = C.void;
+    this.fx?.setBloom(!isLight()); // neon bloom washes out on a light background
+    this.drawStatic();
+    this.core.draw();
+    this.padText.forEach((t) => (t.style.fill = C.muted));
+    this.slots.forEach((sl) => sl.sprite.retheme());
   }
 
   private retarget(snap = false): void {
@@ -496,7 +518,7 @@ export class KarmassEngine {
       .lineTo(0, -mastR + 12)
       .stroke({ width: 2, color: C.muted, alpha: 0.6 })
       .roundRect(-len / 2, -th / 2, len, th, 4)
-      .fill({ color: this.plankTint })
+      .fill({ color: this.plankBalanced ? C.balance : C.steel })
       .stroke({ width: 1, color: C.ink, alpha: 0.12 })
       .rect(-len / 2, -th / 2 - 16, 6, 16)
       .rect(len / 2 - 6, -th / 2 - 16, 6, 16)
@@ -638,7 +660,7 @@ export class KarmassEngine {
     const left = this.slots.get(a.left);
     const right = this.slots.get(a.right);
     if (a.balanced) {
-      this.plankTint = C.balance;
+      this.plankBalanced = true;
       this.drawPlank();
       left?.sprite.setLook('balance');
       right?.sprite.setLook('balance');

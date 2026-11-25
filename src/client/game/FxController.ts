@@ -43,6 +43,7 @@ export class FxController {
   private shakePower = 0;
   private particles: Particle[] = [];
   private slowMs = 0;
+  private bloomOn = true;
 
   constructor(
     private app: Application,
@@ -142,6 +143,11 @@ export class FxController {
     }
   }
 
+  setBloom(on: boolean): void {
+    this.bloomOn = on;
+    this.sync();
+  }
+
   destroy(): void {
     this.particles.forEach((p) => p.g.destroy());
     this.particles = [];
@@ -167,6 +173,7 @@ export class FxController {
     if (this.shock) transient.push(this.shock.f);
     if (this.rgb) transient.push(this.rgb.f);
     this.world.filters = transient;
-    this.glow.forEach((c) => (c.filters = this.bloom ? [this.bloom] : []));
+    const bloom = this.bloomOn ? this.bloom : null;
+    this.glow.forEach((c) => (c.filters = bloom ? [bloom] : []));
   }
 }

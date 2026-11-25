@@ -6,18 +6,25 @@ export class BalanceCore extends Container {
   private ring = new Graphics();
   private body = new Graphics();
 
-  constructor(radius = 12) {
+  constructor(private radius = 12) {
     super();
+    this.draw();
+    this.addChild(this.ring, this.body);
+  }
+
+  draw(): void {
+    const radius = this.radius;
     this.ring
+      .clear()
       .circle(0, 0, radius + 5)
       .stroke({ width: 1.5, color: C.balance, alpha: 0.35 });
     this.body
+      .clear()
       .poly([0, -radius, radius, 0, 0, radius, -radius, 0])
       .fill({ color: C.block })
       .stroke({ width: 2, color: C.ink, alpha: 0.9 })
       .circle(0, 0, radius * 0.32)
       .fill({ color: C.balance });
-    this.addChild(this.ring, this.body);
   }
 
   pulse(t: number): void {

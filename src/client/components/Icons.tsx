@@ -9,17 +9,16 @@ export const BalanceCoreIcon = ({ size = 28 }: { size?: number }) => (
       cy="16"
       r="15"
       fill="none"
-      stroke="#00F5A0"
       strokeOpacity="0.4"
       strokeWidth="1.5"
+      className="stroke-win"
     />
     <path
       d="M16 5 L27 16 L16 27 L5 16 Z"
-      fill="#141418"
-      stroke="#FAFAFA"
       strokeWidth="2"
+      className="fill-block stroke-ink"
     />
-    <circle cx="16" cy="16" r="3.6" fill="#00F5A0" />
+    <circle cx="16" cy="16" r="3.6" className="fill-win" />
   </svg>
 );
 

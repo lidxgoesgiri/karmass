@@ -50,6 +50,7 @@ Leaderboard score: `(100 − Δ) × 10 + (4 − drops used) × 25`. Ties go to w
 - **Spoiler-free sharing.**
   - One tap posts your drop log, never the words, as a reply to the post's pinned comment.
   - Sharing is never automatic.
+- **Follows your Reddit theme.** Signature dark neon look by default; switches to a light palette when Reddit is in light mode.
 - **Honest cold start.**
   - Each edition starts from 100 curated starter votes so the first player gets meaningful physics.
   - Real votes take over as people play.

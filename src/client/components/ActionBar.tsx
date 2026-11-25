@@ -29,7 +29,7 @@ export const ActionBar = (p: Props) => {
     <footer className="mx-auto flex w-full max-w-[720px] shrink-0 items-center justify-center gap-2.5 px-3 pt-1.5 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
       {p.phase === 'vote' && (
         <button
-          className={`${primary} w-full max-w-sm bg-gold text-void`}
+          className={`${primary} w-full max-w-sm bg-gold text-on-accent`}
           disabled={!p.canVote}
           onClick={p.onVote}
         >
@@ -38,7 +38,7 @@ export const ActionBar = (p: Props) => {
       )}
       {(p.phase === 'weigh' || p.phase === 'dropping') && (
         <button
-          className={`${primary} w-full max-w-sm bg-heavy text-void ${p.canDrop && p.phase === 'weigh' ? 'drop-ready' : ''}`}
+          className={`${primary} w-full max-w-sm bg-heavy text-on-accent ${p.canDrop && p.phase === 'weigh' ? 'drop-ready' : ''}`}
           disabled={!p.canDrop || p.phase === 'dropping'}
           onClick={p.onDrop}
         >
@@ -67,7 +67,7 @@ export const ActionBar = (p: Props) => {
             {p.last ? ` · Δ ${p.last.delta}` : ''}
           </div>
           <button
-            className={`${primary} bg-gold text-void`}
+            className={`${primary} bg-gold text-on-accent`}
             onClick={p.onPractice}
           >
             NEXT ROUND
@@ -86,7 +86,7 @@ export const ActionBar = (p: Props) => {
             RESULTS
           </button>
           <button
-            className={`${primary} max-w-56 flex-1 bg-gold text-void`}
+            className={`${primary} max-w-56 flex-1 bg-gold text-on-accent`}
             onClick={p.onPractice}
           >
             PRACTICE ∞

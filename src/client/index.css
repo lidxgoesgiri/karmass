@@ -16,26 +16,48 @@
   font-display: swap;
 }
 
-/* Cyber-Reddit tokens (Blueprint §3). Dark only: no light-mode fallback by design. */
+/* Cyber-Reddit tokens (Blueprint §3). Dark is the signature look; a light palette follows
+   Reddit's theme toggle, which reaches the webview as prefers-color-scheme. */
 @theme {
   --color-void: #09090b;
-  --color-grid: #18181b;
+  --color-grid: #222228;
   --color-block: #141418;
+  --color-panel: #0e0e12;
   --color-line: #27272a;
+  --color-steel: #3f3f46;
+  --color-fulcrum: #1c1c21;
   --color-heavy: #ff4500;
   --color-light: #7193ff;
   --color-win: #00f5a0;
   --color-gold: #ffb800;
   --color-ink: #fafafa;
   --color-muted: #a1a1aa;
+  --color-on-accent: #09090b;
   --font-display: 'Space Grotesk', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
-/* Dark-only UI: tell the browser so scrollbars, focus rings and form controls stay dark
-   even when Reddit or the OS is in light mode. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-void: #f4f4f6;
+    --color-grid: #d4d4da;
+    --color-block: #ffffff;
+    --color-panel: #ffffff;
+    --color-line: #d4d4d8;
+    --color-steel: #a1a1aa;
+    --color-fulcrum: #e4e4e7;
+    --color-heavy: #e63e00;
+    --color-light: #3d63f5;
+    --color-win: #00a870;
+    --color-gold: #d99a00;
+    --color-ink: #18181b;
+    --color-muted: #5c5c66;
+  }
+}
+
+/* Native scrollbars, focus rings and controls follow the active theme. */
 :root {
-  color-scheme: dark;
+  color-scheme: light dark;
 }
 
 html,
@@ -125,7 +147,11 @@ body,
 }
 
 .dot-grid {
-  background-image: radial-gradient(circle, #1f1f24 1px, transparent 1.2px);
+  background-image: radial-gradient(
+    circle,
+    var(--color-grid) 1px,
+    transparent 1.2px
+  );
   background-size: 22px 22px;
 }
 
@@ -138,8 +164,8 @@ body,
   }
 }
 
-/* Thin dark scrollbars for the results card on desktop. */
+/* Thin themed scrollbars for the results card on desktop. */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #3f3f46 transparent;
+  scrollbar-color: var(--color-steel) transparent;
 }

@@ -50,7 +50,7 @@ export const EndStateCard = ({
       <motion.section
         role="dialog"
         aria-label="Results"
-        className="beam flex max-h-full w-full max-w-[460px] flex-col overflow-hidden rounded-2xl border border-line bg-[#0e0e12]/95"
+        className="beam flex max-h-full w-full max-w-[460px] flex-col overflow-hidden rounded-2xl border border-line bg-panel/95"
         initial={{ y: 40, scale: 0.97 }}
         animate={{ y: 0, scale: 1 }}
         exit={{ y: 30, opacity: 0 }}
@@ -262,7 +262,7 @@ const Results = ({
 
       {player.loggedIn ? (
         <button
-          className="min-h-12 w-full rounded-full bg-heavy font-bold tracking-wide text-void transition active:scale-[0.97] disabled:opacity-40"
+          className="min-h-12 w-full rounded-full bg-heavy font-bold tracking-wide text-on-accent transition active:scale-[0.97] disabled:opacity-40"
           disabled={busy || session.shared}
           onClick={share}
         >
