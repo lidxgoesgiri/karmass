@@ -96,6 +96,8 @@ export type Streak = { streak: number; best: number; last: string };
 // Streak = consecutive UTC days with a completed live edition (win or loss).
 export const nextStreak = (prev: Streak | null, today: string): Streak => {
   if (prev?.last === today) return prev;
+  // A grace-window finish of yesterday's edition after today's run must not rewind the streak.
+  if (prev && today < prev.last) return prev;
   const yesterday = utcDate(Date.parse(`${today}T00:00:00Z`) - DAY_MS);
   const streak = prev?.last === yesterday ? prev.streak + 1 : 1;
   return { streak, best: Math.max(streak, prev?.best ?? 0), last: today };

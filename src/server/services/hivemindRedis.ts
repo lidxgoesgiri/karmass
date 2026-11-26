@@ -27,12 +27,28 @@ const key = {
   user: (id: string) => `u:${id}`,
 };
 
-export type EditionMeta = { date: string; postId?: string; stickyId?: string };
+export type EditionMeta = {
+  date: string;
+  postId?: `t3_${string}`;
+  stickyId?: `t1_${string}`;
+};
+
+const isPostId = (s: string | undefined): s is `t3_${string}` =>
+  Boolean(s?.startsWith('t3_'));
+const isCommentId = (s: string | undefined): s is `t1_${string}` =>
+  Boolean(s?.startsWith('t1_'));
 
 // ---- editions ----
 
 export const nextEditionNumber = (): Promise<number> =>
   redis.incrBy(key.counter, 1);
+
+// shortcut: check-then-decrement is not atomic; only a second publish landing in the same
+// millisecond as a failed one could collide. Switch to a watch/multi transaction if that matters.
+export const returnEditionNumber = async (n: number): Promise<void> => {
+  if ((await redis.get(key.counter)) === String(n))
+    await redis.incrBy(key.counter, -1);
+};
 
 export const claimDailyPost = async (date: string): Promise<boolean> =>
   (await redis.hSetNX(key.dailyPosted, date, '1')) === 1;
@@ -66,8 +82,8 @@ export const getEditionMeta = async (
   if (!h.date) return null;
   return {
     date: h.date,
-    ...(h.postId && { postId: h.postId }),
-    ...(h.stickyId && { stickyId: h.stickyId }),
+    ...(isPostId(h.postId) && { postId: h.postId }),
+    ...(isCommentId(h.stickyId) && { stickyId: h.stickyId }),
   };
 };
 

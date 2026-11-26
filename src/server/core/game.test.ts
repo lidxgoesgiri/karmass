@@ -99,6 +99,7 @@ test('streaks count consecutive UTC days', () => {
   const d2 = nextStreak(d1, '2026-12-02');
   assert.equal(d2.streak, 2);
   assert.equal(nextStreak(d2, '2026-12-02'), d2);
+  assert.equal(nextStreak(d2, '2026-12-01'), d2, 'late finish never rewinds');
   const gap = nextStreak(d2, '2026-12-05');
   assert.deepEqual(gap, { streak: 1, best: 2, last: '2026-12-05' });
   assert.equal(flairText(1), 'Balanced Rookie');

@@ -95,6 +95,7 @@ const m = vi.hoisted(() => {
     zsets.clear();
     reddit.comments.length = 0;
     reddit.flairs.length = 0;
+    reddit.submitCustomPost.mockClear();
     for (const k of Object.keys(ctx)) delete ctx[k];
     Object.assign(ctx, {
       userId: 't2_alice',
@@ -120,6 +121,8 @@ import {
   releaseEdition,
 } from '../services/hivemindRedis';
 import { DAY_MS, utcDate } from '../core/game';
+import { editionFor } from '../core/editions';
+import { publishDaily } from '../core/postScheduler';
 
 const call = async (method: 'GET' | 'POST', path: string, body?: unknown) => {
   const res = await api.request(path, {
@@ -237,9 +240,8 @@ describe('share', () => {
       id: 't1_sticky',
       runAs: 'USER',
     });
-    expect(m.reddit.comments.at(-1)?.text).not.toMatch(
-      /Typing fake notes|Refreshing empty inbox/
-    );
+    const text = m.reddit.comments.at(-1)?.text ?? '';
+    for (const o of editionFor(1).options) expect(text).not.toContain(o.label);
     expect((await call('POST', '/share', { edition: 1 })).status).toBe(409);
   });
 });
@@ -292,5 +294,21 @@ describe('practice', () => {
       expect(json.edition.number).toBeGreaterThan(1000);
       expect(JSON.stringify(json)).not.toContain('seedVotes');
     }
+  });
+});
+
+describe('daily publishing', () => {
+  it('publishes at most one automatic edition per UTC day', async () => {
+    const first = await publishDaily(NOW);
+    expect(first?.n).toBe(1);
+    expect(await publishDaily(NOW)).toBeNull();
+    expect(m.reddit.submitCustomPost).toHaveBeenCalledTimes(1);
+  });
+
+  it('a failed post frees the day and the edition number for a retry', async () => {
+    m.reddit.submitCustomPost.mockRejectedValueOnce(new Error('reddit down'));
+    await expect(publishDaily(NOW)).rejects.toThrow('reddit down');
+    const retry = await publishDaily(NOW);
+    expect(retry?.n).toBe(1);
   });
 });

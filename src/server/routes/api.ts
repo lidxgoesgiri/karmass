@@ -293,11 +293,7 @@ api.post('/share', async (c) => {
   const player = await loadPlayer();
   try {
     const text = shareText(ed.n, session, player.streak, session.final.voters);
-    await postShareComment(
-      target as `t1_${string}` | `t3_${string}`,
-      text,
-      context.username
-    );
+    await postShareComment(target, text, context.username);
     return c.json({ ok: true });
   } catch (error) {
     console.error('share failed', error);

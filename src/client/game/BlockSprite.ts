@@ -62,10 +62,6 @@ export class BlockSprite extends Container {
     this.cursor = 'grab';
   }
 
-  get box(): { w: number; h: number } {
-    return { w: this.w, h: this.h };
-  }
-
   setBox(w: number, h: number): void {
     this.w = w;
     this.h = h;

@@ -4,6 +4,7 @@ import {
   claimDailyPost,
   nextEditionNumber,
   releaseEdition,
+  returnEditionNumber,
   unclaimDailyPost,
   unreleaseEdition,
 } from '../services/hivemindRedis';
@@ -21,6 +22,7 @@ export const publishEdition = async (now = Date.now()) => {
     return { n, ...post };
   } catch (error) {
     await unreleaseEdition(n);
+    await returnEditionNumber(n); // keep numbering gap-free so no prompt is skipped
     throw error;
   }
 };

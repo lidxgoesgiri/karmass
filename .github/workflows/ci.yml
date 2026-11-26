@@ -15,5 +15,9 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      # The real daily prompt bank is private; CI builds and tests with the sample bank.
+      - run: cp src/server/data/editions.sample.json src/server/data/editions.json
       # Types, lint, unit + API tests, build and the 1.5 MB gzipped bundle budget.
       - run: npm run check
+        env:
+          KARMASS_SAMPLE_BANK: '1'

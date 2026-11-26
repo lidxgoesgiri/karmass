@@ -1,0 +1,41 @@
+[
+  {
+    "number": 1,
+    "theme": "Relatable Habits",
+    "prompt": "Sample prompt: the two snacks people buy most for a movie are {A} and {B}.",
+    "options": [
+      { "id": "o1", "label": "Popcorn", "seedVotes": 25 },
+      { "id": "o2", "label": "Nachos", "seedVotes": 21 },
+      { "id": "o3", "label": "Gummy bears", "seedVotes": 19 },
+      { "id": "o4", "label": "Chocolate bar", "seedVotes": 17 },
+      { "id": "o5", "label": "Pretzels", "seedVotes": 11 },
+      { "id": "o6", "label": "Fruit cup", "seedVotes": 7 }
+    ]
+  },
+  {
+    "number": 2,
+    "theme": "Internet & Tech",
+    "prompt": "Sample prompt: the two apps people check right after waking up are {A} and {B}.",
+    "options": [
+      { "id": "o1", "label": "Messages", "seedVotes": 26 },
+      { "id": "o2", "label": "Weather", "seedVotes": 14 },
+      { "id": "o3", "label": "Email", "seedVotes": 22 },
+      { "id": "o4", "label": "News", "seedVotes": 12 },
+      { "id": "o5", "label": "Music", "seedVotes": 18 },
+      { "id": "o6", "label": "Calendar", "seedVotes": 8 }
+    ]
+  },
+  {
+    "number": 3,
+    "theme": "Reddit Classics",
+    "prompt": "Sample prompt: the two best seats on a long bus ride are {A} and {B}.",
+    "options": [
+      { "id": "o1", "label": "Window seat", "seedVotes": 27 },
+      { "id": "o2", "label": "Back row", "seedVotes": 18 },
+      { "id": "o3", "label": "Front seat", "seedVotes": 22 },
+      { "id": "o4", "label": "Aisle seat", "seedVotes": 15 },
+      { "id": "o5", "label": "Near the door", "seedVotes": 10 },
+      { "id": "o6", "label": "Next to a friend", "seedVotes": 8 }
+    ]
+  }
+]

@@ -84,6 +84,12 @@ scripts/    check-bundle-size.mjs, mock-preview.mjs (local QA with an in-memory 
 
 Requires Node.js 24 or newer.
 
+The real daily prompt bank (`src/server/data/editions.json`) is kept out of this repository so the puzzles and their hidden starting weights stay secret. A fresh clone runs with the 3-edition sample:
+
+```bash
+cp src/server/data/editions.sample.json src/server/data/editions.json
+```
+
 ```bash
 npm install
 npx devvit login               # once

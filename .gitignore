@@ -2,3 +2,7 @@ node_modules
 dist
 .env
 .DS_Store
+
+# Real daily prompt bank stays private (spoilers + hidden seed weights).
+# CI and fresh clones use editions.sample.json; see README.
+src/server/data/editions.json
