@@ -411,7 +411,10 @@ export class KarmassEngine {
 
   private relayout(snap = false): void {
     if (this.destroyed || !this.app.renderer) return;
-    if (this.slots.size && [...this.slots.values()].some((s) => s.body)) return; // never mid-drop
+    const resting = [...this.slots.values()].some((s) => s.body);
+    if (resting && this.phase !== 'resolved') return; // never mid-drop
+    // After a finished drop the blocks only decorate; drop their bodies so the stage can re-fit.
+    if (resting) this.slots.forEach((s) => (s.body = null));
     const { width, height } = this.app.screen;
     this.L = computeLayout(width, height);
     const L = this.L;
@@ -633,6 +636,7 @@ export class KarmassEngine {
     this.fx?.shockwave(s.sprite.x, s.sprite.y + this.L.blockH / 2);
     this.fx?.shake(3 + intensity * 2);
     sound.play('thump', intensity);
+    sound.vibrate(15);
     s.sprite.setPercent(s.pct, true);
     this.omega += (s.place === 'left' ? -1 : 1) * 0.5 * intensity; // the plank feels the hit
   }
@@ -671,6 +675,7 @@ export class KarmassEngine {
       left?.sprite.setLook('balance');
       right?.sprite.setLook('balance');
       this.launchCoreToStar();
+      sound.vibrate([20, 40, 30]);
     } else {
       const leftHeavy = a.leftPct > a.rightPct;
       left?.sprite.setLook(leftHeavy ? 'heavy' : 'light');
@@ -678,6 +683,7 @@ export class KarmassEngine {
       this.fx?.rgbSplit();
       this.fx?.shake(8);
       sound.play('boing');
+      sound.vibrate(60);
       this.dropCoreOff(leftHeavy ? -1 : 1);
     }
     setTimeout(() => {

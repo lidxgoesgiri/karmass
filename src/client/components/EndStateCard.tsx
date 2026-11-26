@@ -7,6 +7,7 @@ import type {
   Player,
 } from '../../shared/types';
 import { PRIOR_VOTES, TIER_LABEL, tier } from '../../shared/physics';
+import { showShareSheet } from '@devvit/web/client';
 import { apiGet, apiPost, errorText, notify, pad3 } from '../api';
 import { formatCountdown, useCountUp, useNow, useScramble } from '../hooks';
 import { Avatar, CloseIcon } from './Icons';
@@ -160,6 +161,18 @@ const Results = ({
     }
   };
 
+  // Invite via the native share sheet: links the post, never the answers.
+  const invite = async () => {
+    try {
+      await showShareSheet({
+        title: 'KARMASS: Weigh the Hivemind',
+        text: 'Can you read today’s Hivemind? Balance two words in 3 drops.',
+      });
+    } catch {
+      notify('Sharing opens inside the Reddit app.');
+    }
+  };
+
   const toggleFlair = async () => {
     try {
       onPlayer(
@@ -278,12 +291,20 @@ const Results = ({
       <p className="text-center text-[10.5px] text-muted">
         Posts a spoiler-free reply to the pinned comment. Never automatic.
       </p>
-      <button
-        className="min-h-12 w-full rounded-full border border-gold/50 font-bold tracking-wide text-gold transition active:scale-[0.97]"
-        onClick={onPractice}
-      >
-        PRACTICE · UNLIMITED ROUNDS
-      </button>
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          className="min-h-12 rounded-full border border-line font-bold tracking-wide text-ink transition active:scale-[0.97]"
+          onClick={invite}
+        >
+          INVITE
+        </button>
+        <button
+          className="min-h-12 rounded-full border border-gold/50 font-bold tracking-wide text-gold transition active:scale-[0.97]"
+          onClick={onPractice}
+        >
+          PRACTICE ∞
+        </button>
+      </div>
     </div>
   );
 };

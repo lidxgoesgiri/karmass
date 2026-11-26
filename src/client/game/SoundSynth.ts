@@ -61,6 +61,16 @@ class SoundSynth {
     if (this.master) this.master.gain.value = muted ? 0 : MASTER_GAIN;
   }
 
+  // Android-only haptics (iOS has no Vibration API); muted players get no buzz either.
+  vibrate(pattern: number | number[]): void {
+    if (this.muted || typeof navigator.vibrate !== 'function') return;
+    try {
+      navigator.vibrate(pattern);
+    } catch {
+      // some WebViews expose vibrate but throw without a user gesture
+    }
+  }
+
   play(voice: Voice, intensity = 1): void {
     const ctx = this.ctx;
     const out = this.master;
